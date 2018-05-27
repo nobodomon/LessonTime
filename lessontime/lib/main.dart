@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'LoginPage.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new LessonTime());
 
-class MyApp extends StatelessWidget {
+class LessonTime extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Lesson Time',
       theme: new ThemeData(
         // This is the theme of your application.
         //
@@ -17,9 +18,13 @@ class MyApp extends StatelessWidget {
         // "hot reload" (press "r" in the console where you ran "flutter run",
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
+        accentColor: Colors.redAccent,
+        scaffoldBackgroundColor: Colors.white,
+
+
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: new MyHomePage(title: 'Lesson Time'),
     );
   }
 }
@@ -58,12 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
-      bottomNavigationBar: new BottomNavigationBar(
-
-          items: List<BottomNavigationBarItem>(
-
-          )
-      ),
+      body: LoginPage()
     );
   }
 }
