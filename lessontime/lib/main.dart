@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'LoginPage.dart';
+import "TakeAttendance.dart";
 
 void main() => runApp(new LessonTime());
 
@@ -24,7 +25,8 @@ class LessonTime extends StatelessWidget {
 
 
       ),
-      home: new MyHomePage(title: 'Lesson Time'),
+      //home: new MyHomePage(title: 'Lesson Time'),
+      home: new TakeAttendance(),
     );
   }
 }
