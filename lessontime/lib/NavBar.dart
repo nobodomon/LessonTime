@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'MainContainer.dart';
 
 class NavBar extends StatefulWidget {
   @override
@@ -7,7 +8,14 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar>{
   Widget build(BuildContext Context){
-    return new BottomNavigationBar(items: _NavBarItems());
+    return new BottomNavigationBar(
+        items: _NavBarItems(),
+
+    );
+  }
+
+  void ChangePage(int i){
+    MainContainer().ChangePage(i);
   }
 }
 
@@ -16,6 +24,7 @@ List<BottomNavigationBarItem> _NavBarItems(){
    BottomNavigationBarItem homeBtn = new BottomNavigationBarItem(
      icon: new Icon(Icons.home),
      title: new Text("Home"),
+
    );
    BottomNavigationBarItem scan = new BottomNavigationBarItem(
      icon: new Icon(Icons.camera),
@@ -24,6 +33,7 @@ List<BottomNavigationBarItem> _NavBarItems(){
    BottomNavigationBarItem profile = new BottomNavigationBarItem(
      icon: new Icon(Icons.person),
      title: new Text("Profile"),
+
    );
    _navBar.add(homeBtn);
    _navBar.add(scan);
@@ -32,7 +42,6 @@ List<BottomNavigationBarItem> _NavBarItems(){
    return _navBar;
 }
 
-Icons CreateIcon(Icons icon){
-  Icons x = icon;
-  return x;
+void SetActive(int index){
+
 }
