@@ -28,7 +28,8 @@ class LessonTime extends StatelessWidget {
 
       ),
       //home: new MyHomePage(title: 'Lesson Time'),
-      home: new MyHomePage(title: 'LessonTime'),
+      //home: new MyHomePage(title: 'LessonTime'),
+      home: new MainContainer()
     );
   }
 }

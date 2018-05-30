@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "NavBar.dart";
+import "QRPage.dart";
 
 class MainContainer extends StatefulWidget {
 	@override
@@ -50,25 +50,27 @@ class _MainContainerState extends State<MainContainer>
 				),
 			);
 			*/
-
+		tabController.index = 1;
 		return new Scaffold(
 			appBar: new AppBar(title:  new Text("LessonTime",textAlign: TextAlign.center,),),
 			body: new TabBarView(
-				children: <Widget>[new NewPage("First"),new NewPage("Second"),new NewPage("Third")],
+				children: <Widget>[
+					new QRPage(),
+					new NewPage("Second"),
+					new NewPage("Third")],
 				controller: tabController,
 			),
 			bottomNavigationBar: new Material(
 					borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
 					color: Colors.white,
-					,
 					child: new TabBar(
 						controller: tabController,
 						tabs: <Widget>[
 							new Tab(
-								icon: new Icon(Icons.home, color: Colors.indigoAccent,),
+								icon: new Icon(Icons.camera, color: Colors.indigoAccent),
 							),
 							new Tab(
-								icon: new Icon(Icons.camera, color: Colors.indigoAccent),
+								icon: new Icon(Icons.home, color: Colors.indigoAccent,),
 							),
 							new Tab(
 								icon: new Icon(Icons.person, color: Colors.indigoAccent),
