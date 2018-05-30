@@ -5,10 +5,11 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     return new Container(
-      padding: const EdgeInsets.all(48.0),
+      padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
       child: new ListView(
 
         children: <Widget>[
+
           new Logo(),
           new TextFormField(
             decoration: new InputDecoration(
