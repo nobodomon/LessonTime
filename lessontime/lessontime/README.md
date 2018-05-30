@@ -1,6 +1,6 @@
 # lessontime
 
-A new Flutter application.
+A new way of taking attendance
 
 ## Getting Started
 
