@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'Logo.dart';
 
 class LoginPage extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -73,7 +73,7 @@ class LoginPage extends StatelessWidget {
                             child: new Text("Register"),),
                           new Text("|",style: new TextStyle(fontSize: 20.0),),
                           new FlatButton(
-                            onPressed: null, child: new Text("Login"),
+                            onPressed: _signIn, child: new Text("Login"),
                             textColor: Colors.indigo,),
                         ],
                       ),
