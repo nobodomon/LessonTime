@@ -10,17 +10,17 @@ class LoginPage extends StatelessWidget {
   TextEditingController usrCtrl;
   TextEditingController pwCtrl;
   Future<FirebaseUser> _signIn() async{
-    usrCtrl = new TextEditingController();
-    pwCtrl = new TextEditingController();
 
 
-    FirebaseUser user = await _auth.signInWithEmailAndPassword(email: usrCtrl.value.toString(), password: pwCtrl.value.toString());
-    print(user.email);
+    FirebaseUser user = await _auth.signInWithEmailAndPassword(email: usrCtrl.text, password: pwCtrl.text);
+
   }
 
 
   @override
   Widget build(BuildContext context) {
+    usrCtrl = new TextEditingController();
+    pwCtrl = new TextEditingController();
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Lesson Time"),
@@ -43,7 +43,7 @@ class LoginPage extends StatelessWidget {
                       new Padding(padding: const EdgeInsets.all(7.5)),
 
                       new TextFormField(
-                        //controller: usrCtrl,
+                        controller: usrCtrl,
                         decoration: new InputDecoration(
 
                           labelText: 'Enter your Username',
@@ -56,7 +56,7 @@ class LoginPage extends StatelessWidget {
                       new Padding(padding: const EdgeInsets.all(15.0)),
 
                       new TextFormField(
-                        //: pwCtrl,
+                        controller: pwCtrl,
                         decoration: new InputDecoration(
                           labelText: 'Enter your Password',
                           prefixIcon: new Icon(Icons.lock),

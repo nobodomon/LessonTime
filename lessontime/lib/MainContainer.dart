@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "QRPage.dart";
 
 class MainContainer extends StatefulWidget {
   @override
@@ -50,7 +51,7 @@ class _MainContainerState extends State<MainContainer>
 			*/
     tabController.index = 1;
     //Student Bar
-    /*return new Scaffold(
+    return new Scaffold(
 			appBar: new AppBar(title:  new Text("LessonTime",textAlign: TextAlign.center,),),
 			body: new TabBarView(
 				children: <Widget>[
@@ -77,10 +78,10 @@ class _MainContainerState extends State<MainContainer>
 						],)
 			),
 		);
-		*/
+
     //Admin Bar
 
-    return new Scaffold(
+    /*return new Scaffold(
       appBar: new AppBar(
         title: new Text(
           "LessonTime",
@@ -116,7 +117,7 @@ class _MainContainerState extends State<MainContainer>
               )
             ],
           )),
-    );
+    );*/
   }
 }
 

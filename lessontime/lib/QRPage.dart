@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "dart:async";
+import "package:camera/camera.dart";
 
 class QRPage extends StatefulWidget {
   @override
@@ -6,29 +8,29 @@ class QRPage extends StatefulWidget {
 }
 
 class _QRPageState extends State<QRPage> {
-//  List<CameraDescription> cameras;
-//  CameraController controller;
-//
-//  Future<Null> main() async {
-//    cameras = await availableCameras();
-//  }
-//  @override
-//  void initState() {
-//    super.initState();
-//    controller = new CameraController(cameras[0], ResolutionPreset.medium);
-//    controller.initialize().then((_) {
-//      if (!mounted) {
-//        return;
-//      }
-//      setState(() {});
-//    });
-//  }
-//
-//  @override
-//  void dispose() {
-//    controller?.dispose();
-//    super.dispose();
-//  }
+  List<CameraDescription> cameras;
+  CameraController controller;
+
+  Future<Null> main() async {
+    cameras = await availableCameras();
+  }
+  @override
+  void initState() {
+    super.initState();
+    controller = new CameraController(cameras[0], ResolutionPreset.medium);
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
 
   Widget build(BuildContext context) {
     return new Column(
@@ -45,12 +47,13 @@ class _QRPageState extends State<QRPage> {
                   subtitle: const Text(
                       'Music by Julie Gable. Lyrics by Sidney Stein.'),
                 ),
+                buildCam(),
               ],
             ))
       ],
     );
   }
-/*
+
   Container buildCam(){
     Widget build(BuildContext context) {
       if (!controller.value.isInitialized) {
@@ -64,5 +67,5 @@ class _QRPageState extends State<QRPage> {
           ));
     }
   }
-  */
+
 }
