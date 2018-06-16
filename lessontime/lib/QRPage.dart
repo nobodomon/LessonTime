@@ -47,14 +47,14 @@ class _QRPageState extends State<QRPage> {
                   subtitle: const Text(
                       'Music by Julie Gable. Lyrics by Sidney Stein.'),
                 ),
-                buildCam(),
+                //buildCam(),
               ],
             ))
       ],
     );
   }
 
-  Container buildCam(){
+  /*Container buildCam(){
     Widget build(BuildContext context) {
       if (!controller.value.isInitialized) {
         return new Container();
@@ -66,6 +66,6 @@ class _QRPageState extends State<QRPage> {
             child : new CameraPreview(controller)
           ));
     }
-  }
+  }*/
 
 }
