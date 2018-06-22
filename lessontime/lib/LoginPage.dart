@@ -78,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
     return [
       padded(child: new TextFormField(
         key: new Key('email'),
+
         decoration: new InputDecoration(
             labelText: 'Admin Number',
             border: new OutlineInputBorder(

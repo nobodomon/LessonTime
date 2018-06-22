@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'LoginPage.dart';
 import 'root_page.dart';
 import 'auth.dart';
 import "MainContainer.dart";
 
+final FirebaseApp app = FirebaseApp(
+  name: 'LessonTime',
+
+);
+
+
+
 void main() => runApp(new LessonTime());
 
 class LessonTime extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    FirebaseApp.configure(name: "LessonTime", options: FirebaseOptions(
+      googleAppID: '1:722159833325:android:afc176d451740c7b',
+      apiKey: 'AIzaSyDqKqv_GgOohKy7u1PhEKj83demcXuFDr8',
+      databaseURL: "https://lessontime-b3a25.firebaseio.com",
+    ));
     return new MaterialApp(
         title: 'Lesson Time',
         theme: new ThemeData(
