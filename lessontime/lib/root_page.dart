@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'auth.dart';
 import 'LoginPage.dart';
 import 'MainContainer.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RootPage extends StatefulWidget {
   RootPage({Key key, this.auth}) : super(key: key);
@@ -20,7 +21,9 @@ enum AuthStatus {
 class _RootPageState extends State<RootPage> {
 
   AuthStatus authStatus = AuthStatus.notSignedIn;
+  FirebaseUser fbUser;
 
+  @override
   initState() {
     super.initState();
     widget.auth.currentUser().then((userId) {
@@ -29,7 +32,6 @@ class _RootPageState extends State<RootPage> {
       });
     });
   }
-
   void _updateAuthStatus(AuthStatus status) {
     setState(() {
       authStatus = status;

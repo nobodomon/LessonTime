@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lessontime/models/Model.dart';
 import 'dart:async';
 import 'auth.dart';
 
@@ -14,13 +15,20 @@ class HomePage extends StatefulWidget{
 class _HomePageState extends State<HomePage>{
   _HomePageState(this._auth);
   FirebaseUser fbuser;
+  Users nUser;
   final BaseAuth _auth;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUser();
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
     String email = "";
-    getUser();
     if(fbuser == null){
       print("User is null now??");
       email = "not valid";
