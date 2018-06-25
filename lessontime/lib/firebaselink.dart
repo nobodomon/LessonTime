@@ -12,13 +12,10 @@ class firebaselink{
   Device device;
 
 
-  Future<Users> getUser(String adminNo) async{
+  Future<DataSnapshot> getUser(String adminNo) async{
     String trimmed = adminNo.substring(0,7);
     final DatabaseReference User = _db.reference().child(trimmed.toUpperCase());
-    User.once().then((DataSnapshot snapshot){
-      Users user = new Users.fromJson(snapshot.value);
-      return user;
-    });
+    return User.once();
     /*_db.reference().child(trimmed).once().then((DataSnapshot snapshot){
       var user = new Users.fromJson(snapshot.value);
       complete.complete(user);

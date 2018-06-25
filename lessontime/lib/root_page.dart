@@ -1,5 +1,8 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lessontime/firebaselink.dart';
+import 'package:lessontime/models/Model.dart';
 import 'auth.dart';
 import 'LoginPage.dart';
 import 'MainContainer.dart';
@@ -21,8 +24,8 @@ enum AuthStatus {
 class _RootPageState extends State<RootPage> {
 
   AuthStatus authStatus = AuthStatus.notSignedIn;
+  BaseAuth auth;
   FirebaseUser fbUser;
-
   @override
   initState() {
     super.initState();
@@ -51,8 +54,10 @@ class _RootPageState extends State<RootPage> {
       case AuthStatus.signedIn:
         return new MainContainer(
             auth: widget.auth,
-            onSignOut: () => _updateAuthStatus(AuthStatus.notSignedIn)
+            onSignOut: () => _updateAuthStatus(AuthStatus.notSignedIn),
         );
     }
   }
+
+
 }

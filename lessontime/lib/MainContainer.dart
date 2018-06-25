@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import "package:flutter/material.dart";
 
 import 'HomePage.dart';
@@ -9,10 +10,9 @@ import 'dart:async';
 
 
 class MainContainer extends StatefulWidget {
-  MainContainer({this.auth, this.onSignOut, this.userType});
+  MainContainer({this.auth, this.onSignOut});
   final BaseAuth auth;
   final VoidCallback onSignOut;
-  int userType;
   
   @override
   _MainContainerState createState() =>
@@ -28,49 +28,40 @@ class _MainContainerState extends State<MainContainer>
   TabController tabController;
   FirebaseUser fbUser;
   Users cUser;
+  Scaffold nav;
 
   @override
   void initState(){
     // TODO: implement initState
-    super.initState();
-    getUser();
-    print("called getUser()");
-    getCUser();
     tabController = new TabController(length: 3, vsync: this);
-    print("Hi");
+      print("im initstate");
+      setUsers();
+      super.initState();
   }
 
   @override
   Widget build(BuildContext context){
-    if(fbUser == null){
-      print("cuser is null");
-    }else{
-      print(fbUser.email);
-    }
-    if(cUser == null){
-      print("cuser is null");
-    }else{
-      print(cUser.userType);
-    }
-    //setNavs(cUser.userType);
-    /*switch (cUser.userType){
-      case 0: return studNav();
-      case 1: return lectNav();
+      /*switch (cUser.userType) {
+        case 0:
+          return studNav();
+        case 1:
+          return lectNav();
+        default :
+          return studNav();
+      }*/
       //case 2 :return adminNav();
-    }*/
-    //Admin Bar
+
+
+
+    //setNavs(cUser.userType);
     return studNav();
+
+    //return nav;
+    //Admin Bar
   }
 
-  setNavs(int type){
-    switch(type){
-      case 0: return studNav();
-      case 1: return lectNav();
-    }
-  }
   @override
   void dispose() {
-    print("hi");
     tabController.dispose();
     super.dispose();
   }
@@ -123,7 +114,7 @@ class _MainContainerState extends State<MainContainer>
     );
   }
 
-  Scaffold studNav(){
+  Scaffold studNav() {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
@@ -171,7 +162,7 @@ class _MainContainerState extends State<MainContainer>
     );
   }
 
-  void getUser() async{
+  Future getUser() async{
     Future<FirebaseUser> fbUsr = auth.currentUserAct();
     setState(() {
       if(fbUsr == null){
@@ -181,40 +172,56 @@ class _MainContainerState extends State<MainContainer>
           if(user != null){
 
             fbUser = user;
-
+            getCUser(user.email);
           }else{
 
           }
         });
       }
     });
+
+  }
+
+  Future getCUser(String email) async{
     firebaselink _fb = new firebaselink();
-    print("hi");
-    //print(fbUser.email);
-    print("hi");
-    Future<Users> xUser = _fb.getUser(fbUser.email);
-    print("hi");
-    setState(() {
-      if(xUser == null){
+    Users user;
+    Future<DataSnapshot> data = _fb.getUser(email).then((DataSnapshot xData){
+      user = new Users.fromJson(xData.value);
+      print(email + "hi");
+        this.cUser = user;
+        print(cUser.adminNo);
+
+    });
+    /*setState(() {
+      if(user == null){
         print("xUser is null");
       }else{
         xUser.then((Users user){
           if(user != null){
             print(user.adminNo);
-            cUser = user;
+            this.cUser = user;
             //return user;
+          }else{
+            print("no user found");
           }
         });
       }
-    });
-  }
-
-  void getCUser() async{
-
+    });*/
   }
 
   Future setUsers() async{
     await getUser();
+
+  }
+
+  void setNav() async{
+    await setUsers();
+    switch(cUser.userType){
+      case 0: nav = studNav();
+      break;
+      case 1: nav = lectNav();
+      break;
+    }
   }
 }
 
