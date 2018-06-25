@@ -29,19 +29,37 @@ class _MainContainerState extends State<MainContainer>
   FirebaseUser fbUser;
   Users cUser;
   Scaffold nav;
-
+  bool isLoaded = false;
   @override
   void initState(){
     // TODO: implement initState
     tabController = new TabController(length: 3, vsync: this);
-      print("im initstate");
       setUsers();
       super.initState();
   }
 
   @override
   Widget build(BuildContext context){
-      /*switch (cUser.userType) {
+    firebaselink _fb = new firebaselink();
+    if(fbUser == null){
+      return loader();
+    }
+    return new FutureBuilder(
+    future: _fb.getUser(fbUser.email),
+    builder: (BuildContext context, AsyncSnapshot snapshot) {
+      if(snapshot.hasData){
+        cUser = new Users.fromSnapshot(snapshot.data);
+        switch(cUser.userType){
+          case 0: return studNav();
+          case 1: return lectNav();
+        }
+      }else{
+        return loader();
+      }
+     ///load until snapshot.hasData resolves to true
+    });
+
+  /*switch (cUser.userType) {
         case 0:
           return studNav();
         case 1:
@@ -52,9 +70,20 @@ class _MainContainerState extends State<MainContainer>
       //case 2 :return adminNav();
 
 
-
-    //setNavs(cUser.userType);
-    return studNav();
+    /*
+    if(isLoaded == false){
+      return new Container();
+      //return studNav();
+    }else{
+      switch (cUser.userType) {
+        case 0:
+          return studNav();
+        case 1:
+          return lectNav();
+        default :
+          return studNav();
+      }
+      */
 
     //return nav;
     //Admin Bar
@@ -162,6 +191,25 @@ class _MainContainerState extends State<MainContainer>
     );
   }
 
+  Scaffold loader(){
+    return new Scaffold(
+      body: new Container(
+        child: new Center(
+          widthFactor: 100.0,
+          heightFactor:  100.0,
+
+          child: new Card(
+
+            child: new Padding(
+              padding: new EdgeInsets.all(15.0),
+              child: new CircularProgressIndicator(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future getUser() async{
     Future<FirebaseUser> fbUsr = auth.currentUserAct();
     setState(() {
@@ -169,13 +217,8 @@ class _MainContainerState extends State<MainContainer>
         print("its null");
       }else{
         fbUsr.then((FirebaseUser user){
-          if(user != null){
+          fbUser = user;
 
-            fbUser = user;
-            getCUser(user.email);
-          }else{
-
-          }
         });
       }
     });
@@ -188,9 +231,11 @@ class _MainContainerState extends State<MainContainer>
     Future<DataSnapshot> data = _fb.getUser(email).then((DataSnapshot xData){
       user = new Users.fromJson(xData.value);
       print(email + "hi");
-        this.cUser = user;
-        print(cUser.adminNo);
-
+        setState(() {
+          this.cUser = user;
+          print(cUser.adminNo);
+          isLoaded = true;
+        });
     });
     /*setState(() {
       if(user == null){
@@ -211,10 +256,10 @@ class _MainContainerState extends State<MainContainer>
 
   Future setUsers() async{
     await getUser();
-
+    //await getCUser(fbUser.email);
   }
 
-  void setNav() async{
+  setNav() async{
     await setUsers();
     switch(cUser.userType){
       case 0: nav = studNav();
