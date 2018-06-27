@@ -7,6 +7,7 @@ class Users {
   String key;
   String adminNo;
   int userType;
+  String courseGrp; //eg SF1601 or etc
 
 
   Users(this.adminNo, this.userType);
@@ -28,6 +29,9 @@ class Users {
     userType = data["userType"];
   }
 }
+
+
+
 class Device{
   String key;
   String deviceName;

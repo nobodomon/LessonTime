@@ -5,10 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class firebaselink{
   final FirebaseDatabase _db = FirebaseDatabase.instance;
-
+  final Firestore _fs = Firestore.instance;
   Device device;
 
 
@@ -29,10 +30,16 @@ class firebaselink{
     Users toAdd = new Users(adminNo, userType);
 
     String trimmed = adminNo.substring(0,7);
+    Firestore.instance.collection("Users").document(trimmed).setData(toAdd.toJson());
+    Firestore.instance.collection("Users").document(trimmed).collection("device").add(device.toJson());
     DatabaseReference ref = _db.reference().child(trimmed);
     DatabaseReference subRef = _db.reference().child(trimmed).child("device");
     ref.set(toAdd.toJson());
     subRef.set(device.toJson());
+  }
+
+  void editUser(String adminNo ){
+
   }
 
   void getDeviceDetails() async {

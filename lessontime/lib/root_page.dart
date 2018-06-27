@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lessontime/firebaselink.dart';
 import 'package:lessontime/models/Model.dart';
-import 'auth.dart';
-import 'LoginPage.dart';
-import 'MainContainer.dart';
+import 'package:lessontime/auth.dart';
+import 'package:lessontime/LoginPage.dart';
+import 'package:lessontime/MainContainer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RootPage extends StatefulWidget {

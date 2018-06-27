@@ -1,8 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import "package:flutter/material.dart";
 
-import 'HomePage.dart';
-import 'auth.dart';
+import 'package:lessontime/StudPages/HomePage.dart';
+import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
 import 'firebaselink.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,6 +30,7 @@ class _MainContainerState extends State<MainContainer>
   Users cUser;
   Scaffold nav;
   bool isLoaded = false;
+
   @override
   void initState(){
     // TODO: implement initState
@@ -190,6 +191,54 @@ class _MainContainerState extends State<MainContainer>
           )),
     );
   }
+
+  Scaffold adminNav(){
+    tabController = new TabController(length: 2, vsync: this);
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(
+          "LessonTime",
+          textAlign: TextAlign.center,
+        ),
+        actions: <Widget>[
+          new FlatButton(
+              onPressed: _signOut,
+              child: new Icon(
+                Icons.clear,
+                color: Colors.white,
+              ))
+        ],
+      ),
+      body: new TabBarView(
+        children: <Widget>[
+          new NewPage("First"),
+          //new NewPage("Second"),
+          new NewPage("Third")
+        ],
+        controller: tabController,
+      ),
+      bottomNavigationBar: new Material(
+          borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+          color: Colors.white,
+          child: new TabBar(
+            controller: tabController,
+            tabs: <Widget>[
+              new Tab(
+                icon: new Icon(
+                    Icons.add_circle,
+                    color: Colors.indigoAccent),
+              ),
+              new Tab(
+                icon: new Icon(
+                  Icons.home,
+                  color: Colors.indigoAccent,
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+
 
   Scaffold loader(){
     return new Scaffold(
