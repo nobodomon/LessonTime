@@ -1,13 +1,13 @@
-import 'package:firebase_database/firebase_database.dart';
+
 import "package:flutter/material.dart";
 
 import 'package:lessontime/StudPages/HomePage.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
-import 'firebaselink.dart';
+import 'package:lessontime/firebaselink.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainContainer extends StatefulWidget {
   MainContainer({this.auth, this.onSignOut});
@@ -41,24 +41,29 @@ class _MainContainerState extends State<MainContainer>
 
   @override
   Widget build(BuildContext context){
+    //return studNav();
+    //return studNav();
     firebaselink _fb = new firebaselink();
     if(fbUser == null){
       return loader();
+    }else{
+      return new FutureBuilder(
+          future: _fb.getUserOnceFs(fbUser.email.toLowerCase()),
+          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if(snapshot.hasData){
+              cUser = new Users.fromSnapshot(snapshot.data);
+              switch(cUser.userType){
+                case 0: return studNav();
+                case 1: return lectNav();
+                case 2: return adminNav();
+              }
+            }else{
+              return loader();
+            }
+            ///load until snapshot.hasData resolves to true
+          });
     }
-    return new FutureBuilder(
-    future: _fb.getUser(fbUser.email),
-    builder: (BuildContext context, AsyncSnapshot snapshot) {
-      if(snapshot.hasData){
-        cUser = new Users.fromSnapshot(snapshot.data);
-        switch(cUser.userType){
-          case 0: return studNav();
-          case 1: return lectNav();
-        }
-      }else{
-        return loader();
-      }
-     ///load until snapshot.hasData resolves to true
-    });
+
 
   /*switch (cUser.userType) {
         case 0:
@@ -193,11 +198,10 @@ class _MainContainerState extends State<MainContainer>
   }
 
   Scaffold adminNav(){
-    tabController = new TabController(length: 2, vsync: this);
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
-          "LessonTime",
+          "LessonTime(Admin)",
           textAlign: TextAlign.center,
         ),
         actions: <Widget>[
@@ -212,7 +216,7 @@ class _MainContainerState extends State<MainContainer>
       body: new TabBarView(
         children: <Widget>[
           new NewPage("First"),
-          //new NewPage("Second"),
+          new NewPage("Second"),
           new NewPage("Third")
         ],
         controller: tabController,
@@ -225,12 +229,18 @@ class _MainContainerState extends State<MainContainer>
             tabs: <Widget>[
               new Tab(
                 icon: new Icon(
-                    Icons.add_circle,
+                    Icons.person_add,
                     color: Colors.indigoAccent),
               ),
               new Tab(
                 icon: new Icon(
-                  Icons.home,
+                  Icons.edit,
+                  color: Colors.indigoAccent,
+                ),
+              ),
+              new Tab(
+                icon: new Icon(
+                  Icons.assessment,
                   color: Colors.indigoAccent,
                 ),
               ),
@@ -274,34 +284,6 @@ class _MainContainerState extends State<MainContainer>
 
   }
 
-  Future getCUser(String email) async{
-    firebaselink _fb = new firebaselink();
-    Users user;
-    Future<DataSnapshot> data = _fb.getUser(email).then((DataSnapshot xData){
-      user = new Users.fromJson(xData.value);
-      print(email + "hi");
-        setState(() {
-          this.cUser = user;
-          print(cUser.adminNo);
-          isLoaded = true;
-        });
-    });
-    /*setState(() {
-      if(user == null){
-        print("xUser is null");
-      }else{
-        xUser.then((Users user){
-          if(user != null){
-            print(user.adminNo);
-            this.cUser = user;
-            //return user;
-          }else{
-            print("no user found");
-          }
-        });
-      }
-    });*/
-  }
 
   Future setUsers() async{
     await getUser();

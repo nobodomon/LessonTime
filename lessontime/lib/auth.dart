@@ -22,7 +22,7 @@ class Auth implements BaseAuth {
   Future<String> createUser(String email, String password, int userType) async {
     FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
     firebaselink _link = new firebaselink();
-    _link.createUser(email, userType);
+    _link.createUserFs(email, userType);
     return user.uid;
   }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:async';
@@ -14,7 +15,7 @@ class firebaselink{
 
 
   Future<DataSnapshot> getUser(String adminNo) async{
-    String trimmed = adminNo.substring(0,7);
+    String trimmed = adminNo.substring(0,adminNo.length-18);
     final DatabaseReference User = _db.reference().child(trimmed.toUpperCase());
     return User.once();
     /*_db.reference().child(trimmed).once().then((DataSnapshot snapshot){
@@ -24,14 +25,30 @@ class firebaselink{
     return complete.future;*/
   }
 
+  Future<DocumentSnapshot> getUserOnceFs(String email) async{
+    String trimmed = email.substring(0,email.length-18);
+    return _fs.collection("Users").document(trimmed.toLowerCase()).get();
+  }
+
+  Future<Stream<DocumentSnapshot>> getUserStreamFs(String adminNo) async{
+    String trimmed = adminNo.substring(0,adminNo.length-18);
+    return _fs.collection("Users").document(trimmed.toLowerCase()).snapshots();
+  }
+
+  void createUserFs(String adminNo, int userType) async{
+    await getDeviceDetails();
+    Users toAdd = new Users(adminNo, userType);
+
+    String trimmed = adminNo.substring(0,adminNo.length-18);
+    Firestore.instance.collection("Users").document(trimmed).setData(toAdd.toJson());
+    Firestore.instance.collection("Users").document(trimmed).collection("device").add(device.toJson());
+  }
 
   void createUser(String adminNo, int userType) async{
     await getDeviceDetails();
     Users toAdd = new Users(adminNo, userType);
 
-    String trimmed = adminNo.substring(0,7);
-    Firestore.instance.collection("Users").document(trimmed).setData(toAdd.toJson());
-    Firestore.instance.collection("Users").document(trimmed).collection("device").add(device.toJson());
+    String trimmed = adminNo.substring(0,adminNo.length-18);
     DatabaseReference ref = _db.reference().child(trimmed);
     DatabaseReference subRef = _db.reference().child(trimmed).child("device");
     ref.set(toAdd.toJson());
