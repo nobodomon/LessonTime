@@ -46,7 +46,7 @@ class firebaselink{
       Firestore.instance.collection("Users").document(trimmed).collection("device").add(dev.toJson());
     });
   }
-
+  
   void createUser(String adminNo, int userType) async{
     await getDeviceDetails();
     Users toAdd = new Users(adminNo, userType);

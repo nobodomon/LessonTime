@@ -22,6 +22,7 @@ class _AddLectState extends State<AddLect> {
   String _email;
   String _authHint = '';
 
+
   bool validateAndSave() {
     final form = formKey.currentState;
     if (form.validate()) {
@@ -31,14 +32,18 @@ class _AddLectState extends State<AddLect> {
     return false;
   }
 
-  void validateAndSubmit() async {
+  void validateAndSubmit(BuildContext context) async {
     if (validateAndSave()) {
       try {
         var userId = 
-        await widget.auth.createUser(_email, _email,1);
+        await widget.auth.createUser(_email, _email,2);
             
+        final form = formKey.currentState;
         setState(() {
+          form.reset();
           _authHint = 'Lecturer Created\n\nUser id: $userId';
+          SnackBar bar = new SnackBar(content:new Text('Lecturer Created\n\nUser id: $userId'),);
+          Scaffold.of(context).showSnackBar(bar);
         });
       }catch (e) {
         setState(() {
@@ -70,12 +75,12 @@ class _AddLectState extends State<AddLect> {
     ];
   }
 
-  List<Widget> submitWidgets(){
+  List<Widget> submitWidgets(BuildContext context){
     return [
       new FlatButton(
         key: new Key('register'),
         child: new Text('Create'),
-        onPressed: validateAndSubmit
+        onPressed: () => validateAndSubmit(context)
     )];
   }
 
@@ -94,9 +99,10 @@ class _AddLectState extends State<AddLect> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListView(
-        children: [
-          new Container(
+      return new Scaffold(
+        resizeToAvoidBottomPadding: false,
+        backgroundColor: Colors.transparent,
+        body :new Container(
             padding: const EdgeInsets.all(16.0),
             child: new Column(
                 children: [
@@ -105,8 +111,8 @@ class _AddLectState extends State<AddLect> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             const ListTile(
-                              leading: Icon(Icons.person_add),
-                              title: const Text("Add a new lecturer"),
+                              leading: Icon(Icons.group_add),
+                              title: const Text("Add a new Lecturer"),
                             ),
                             new Container(
                                 padding: const EdgeInsets.all(16.0),
@@ -114,17 +120,17 @@ class _AddLectState extends State<AddLect> {
                                     key: formKey,
                                     child: new Column(
                                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: usernameAndPassword() + submitWidgets(),
-                                    )
+                                      children: usernameAndPassword() + submitWidgets(context),
+                                    ),
+                                    
                                 )
                             ),
                           ])
                   ),
-                  hintText()
+                  //hintText()
                 ]
             )
           )
-        ]
       );
   }
 

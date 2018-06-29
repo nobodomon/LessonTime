@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/AdminPages/AddUser.dart';
+import 'package:lessontime/AdminPages/HomePanel.dart';
 
 class MainContainer extends StatefulWidget {
   MainContainer({this.auth, this.onSignOut});
@@ -198,7 +199,7 @@ class _MainContainerState extends State<MainContainer>
       body: new TabBarView(
         children: <Widget>[
           new AddUser(),
-          new NewPage("Second"),
+          new HomePanel(fbUser),
           new NewPage("Third")
         ],
         controller: tabController,

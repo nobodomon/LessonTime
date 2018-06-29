@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lessontime/auth.dart';
 
-class AddStud extends StatefulWidget {
-  AddStud({Key key, this.title, this.auth}) : super(key: key);
+class AddAdmin extends StatefulWidget {
+  AddAdmin({Key key, this.title, this.auth}) : super(key: key);
 
   final String title;
   final BaseAuth auth;
 
   @override
-  _AddStudState createState() => new _AddStudState();
+  _AddAdminState createState() => new _AddAdminState();
 }
 
 enum FormType {
@@ -16,7 +16,7 @@ enum FormType {
   register
 }
 
-class _AddStudState extends State<AddStud> {
+class _AddAdminState extends State<AddAdmin> {
   static final formKey = new GlobalKey<FormState>();
 
   String _email;
@@ -36,13 +36,13 @@ class _AddStudState extends State<AddStud> {
     if (validateAndSave()) {
       try {
         var userId = 
-        await widget.auth.createUser(_email, _email,1);
+        await widget.auth.createUser(_email, _email,2);
             
         final form = formKey.currentState;
         setState(() {
           form.reset();
-          _authHint = 'Student Created\n\nUser id: $userId';
-          SnackBar bar = new SnackBar(content:new Text('Student Created\n\nUser id: $userId'),);
+          _authHint = 'Admin Created\n\nUser id: $userId';
+          SnackBar bar = new SnackBar(content:new Text('Admin Created\n\nUser id: $userId'),);
           Scaffold.of(context).showSnackBar(bar);
         });
       }catch (e) {
@@ -64,7 +64,7 @@ class _AddStudState extends State<AddStud> {
         key: new Key('email'),
 
         decoration: new InputDecoration(
-            labelText: 'Admin Number',
+            labelText: 'Username',
             border: new OutlineInputBorder(
               borderRadius: new BorderRadius.circular(25.0),
             )),
@@ -112,7 +112,7 @@ class _AddStudState extends State<AddStud> {
                           children: <Widget>[
                             const ListTile(
                               leading: Icon(Icons.group_add),
-                              title: const Text("Add a new student"),
+                              title: const Text("Add a new Admin"),
                             ),
                             new Container(
                                 padding: const EdgeInsets.all(16.0),
