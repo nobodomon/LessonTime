@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lessontime/auth.dart';
 
-class AddLect extends StatefulWidget {
-  AddLect({Key key, this.title, this.auth}) : super(key: key);
+class AddStud extends StatefulWidget {
+  AddStud({Key key, this.title, this.auth}) : super(key: key);
 
   final String title;
   final BaseAuth auth;
 
   @override
-  _AddLectState createState() => new _AddLectState();
+  _AddStudState createState() => new _AddStudState();
 }
 
 enum FormType {
@@ -16,7 +16,7 @@ enum FormType {
   register
 }
 
-class _AddLectState extends State<AddLect> {
+class _AddStudState extends State<AddStud> {
   static final formKey = new GlobalKey<FormState>();
 
   String _email;
@@ -105,8 +105,8 @@ class _AddLectState extends State<AddLect> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             const ListTile(
-                              leading: Icon(Icons.person_add),
-                              title: const Text("Add a new lecturer"),
+                              leading: Icon(Icons.group_add),
+                              title: const Text("Add a new student"),
                             ),
                             new Container(
                                 padding: const EdgeInsets.all(16.0),

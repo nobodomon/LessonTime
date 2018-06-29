@@ -26,22 +26,25 @@ class firebaselink{
   }
 
   Future<DocumentSnapshot> getUserOnceFs(String email) async{
-    String trimmed = email.substring(0,email.length-18);
-    return _fs.collection("Users").document(trimmed.toLowerCase()).get();
+    String trimmed = email.substring(0,email.length-18).toUpperCase();
+    print(trimmed + " is the search string");
+    return _fs.collection("Users").document(trimmed.toUpperCase()).get();
   }
 
-  Future<Stream<DocumentSnapshot>> getUserStreamFs(String adminNo) async{
-    String trimmed = adminNo.substring(0,adminNo.length-18);
-    return _fs.collection("Users").document(trimmed.toLowerCase()).snapshots();
+  Future<Stream<DocumentSnapshot>> getUserStreamFs(String email) async{
+      String trimmed = email.substring(0,email.length-18).toUpperCase();
+    return _fs.collection("Users").document(trimmed).snapshots();
   }
 
   void createUserFs(String adminNo, int userType) async{
-    await getDeviceDetails();
-    Users toAdd = new Users(adminNo, userType);
+    var device = await getDeviceDetails().then((Device dev){
+      adminNo.toUpperCase();
+      String trimmed = adminNo.substring(0,adminNo.length-18).toUpperCase();
+      Users toAdd = new Users(adminNo, userType);
 
-    String trimmed = adminNo.substring(0,adminNo.length-18);
-    Firestore.instance.collection("Users").document(trimmed).setData(toAdd.toJson());
-    Firestore.instance.collection("Users").document(trimmed).collection("device").add(device.toJson());
+      Firestore.instance.collection("Users").document(trimmed).setData(toAdd.toJson());
+      Firestore.instance.collection("Users").document(trimmed).collection("device").add(dev.toJson());
+    });
   }
 
   void createUser(String adminNo, int userType) async{
@@ -59,7 +62,7 @@ class firebaselink{
 
   }
 
-  void getDeviceDetails() async {
+  static Future<Device> getDeviceDetails() async {
     String deviceName;
     String identifier;
     final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
@@ -80,6 +83,6 @@ class firebaselink{
 //if (!mounted) return;
     print(deviceName);
     print (identifier);
-  device = new Device(deviceName, identifier);
+  return new Device(deviceName, identifier);
   }
 }

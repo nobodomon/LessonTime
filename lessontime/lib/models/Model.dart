@@ -7,19 +7,31 @@ class Users {
   String key;
   String adminNo;
   String email;
+  DateTime lastLogin;
   int userType;
   String courseGrp; //eg SF1601 or etc
 
 
   Users(this.email, this.userType){
     this.adminNo = email.substring(0, email.length-18);
+    this.lastLogin = null;
   }
 
-  Users.fromSnapshot(DocumentSnapshot snapshot)
-      : key = snapshot.documentID,
-        email = snapshot["email"],
-        adminNo = snapshot["adminNo"],
-        userType = snapshot['userType'];
+  Users.fromSnapshot(DocumentSnapshot snapshot){
+    if(snapshot["DateTime"] == null){
+        this.key = snapshot.documentID;
+        this.email = snapshot["email"];
+        this.adminNo = snapshot["adminNo"];
+        this.userType = snapshot['userType'];
+    }else{
+        this.key = snapshot.documentID;
+        this.email = snapshot["email"];
+        this.adminNo = snapshot["adminNo"];
+        this.userType = snapshot['userType'];
+        this.lastLogin = snapshot['lastLogin'];
+    }
+  }
+      
 
 
 

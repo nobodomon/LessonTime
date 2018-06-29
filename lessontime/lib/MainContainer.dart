@@ -4,10 +4,12 @@ import "package:flutter/material.dart";
 import 'package:lessontime/StudPages/HomePage.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
+import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/firebaselink.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lessontime/AdminPages/AddUser.dart';
 
 class MainContainer extends StatefulWidget {
   MainContainer({this.auth, this.onSignOut});
@@ -42,13 +44,12 @@ class _MainContainerState extends State<MainContainer>
   @override
   Widget build(BuildContext context){
     //return studNav();
-    //return studNav();
     firebaselink _fb = new firebaselink();
     if(fbUser == null){
-      return loader();
+      return Assets.loader();
     }else{
       return new FutureBuilder(
-          future: _fb.getUserOnceFs(fbUser.email.toLowerCase()),
+          future: _fb.getUserOnceFs(fbUser.email),
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if(snapshot.hasData){
               cUser = new Users.fromSnapshot(snapshot.data);
@@ -58,41 +59,14 @@ class _MainContainerState extends State<MainContainer>
                 case 2: return adminNav();
               }
             }else{
-              return loader();
+              return Assets.loader();
             }
             ///load until snapshot.hasData resolves to true
           });
     }
 
 
-  /*switch (cUser.userType) {
-        case 0:
-          return studNav();
-        case 1:
-          return lectNav();
-        default :
-          return studNav();
-      }*/
-      //case 2 :return adminNav();
-
-
-    /*
-    if(isLoaded == false){
-      return new Container();
-      //return studNav();
-    }else{
-      switch (cUser.userType) {
-        case 0:
-          return studNav();
-        case 1:
-          return lectNav();
-        default :
-          return studNav();
-      }
-      */
-
-    //return nav;
-    //Admin Bar
+  
   }
 
   @override
@@ -116,6 +90,14 @@ class _MainContainerState extends State<MainContainer>
           "LessonTime",
           textAlign: TextAlign.center,
         ),
+        actions: <Widget>[
+          new FlatButton(
+              onPressed: _signOut,
+              child: new Icon(
+                Icons.clear,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: new TabBarView(
         children: <Widget>[
@@ -168,7 +150,7 @@ class _MainContainerState extends State<MainContainer>
       body: new TabBarView(
         children: <Widget>[
           new NewPage("First"),
-          new HomePage(auth),
+          new HomePage(fbUser),
           //new NewPage("Second"),
           new NewPage("Third")
         ],
@@ -215,7 +197,7 @@ class _MainContainerState extends State<MainContainer>
       ),
       body: new TabBarView(
         children: <Widget>[
-          new NewPage("First"),
+          new AddUser(),
           new NewPage("Second"),
           new NewPage("Third")
         ],
@@ -250,24 +232,7 @@ class _MainContainerState extends State<MainContainer>
   }
 
 
-  Scaffold loader(){
-    return new Scaffold(
-      body: new Container(
-        child: new Center(
-          widthFactor: 100.0,
-          heightFactor:  100.0,
-
-          child: new Card(
-
-            child: new Padding(
-              padding: new EdgeInsets.all(15.0),
-              child: new CircularProgressIndicator(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  
 
   Future getUser() async{
     Future<FirebaseUser> fbUsr = auth.currentUserAct();
