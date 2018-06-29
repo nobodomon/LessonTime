@@ -24,10 +24,11 @@ class _AddUserState extends State<AddUser> with SingleTickerProviderStateMixin{
     // TODO: implement build
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
+      
       appBar: new TabBar(
         
         indicatorSize: TabBarIndicatorSize.label,
-        indicatorPadding: new EdgeInsets.all(15.0),
+        indicatorPadding: kTabLabelPadding,
         indicator: new BubbleTabIndicator(
           indicatorHeight: 30.0,
           indicatorRadius: 5.0,
