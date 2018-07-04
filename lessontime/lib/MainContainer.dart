@@ -5,6 +5,7 @@ import 'package:lessontime/StudPages/HomePage.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
+import 'package:lessontime/CommonAssets/Settings.dart';
 import 'package:lessontime/firebaselink.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
@@ -22,6 +23,8 @@ class MainContainer extends StatefulWidget {
       new _MainContainerState(auth: auth, onSignOut: onSignOut);
 }
 
+enum barMenu { settings, signOut}
+
 class _MainContainerState extends State<MainContainer>
     with SingleTickerProviderStateMixin {
   _MainContainerState({this.auth, this.onSignOut});
@@ -33,7 +36,6 @@ class _MainContainerState extends State<MainContainer>
   Users cUser;
   Scaffold nav;
   bool isLoaded = false;
-
   @override
   void initState(){
     // TODO: implement initState
@@ -70,6 +72,31 @@ class _MainContainerState extends State<MainContainer>
   
   }
 
+  AppBar appBar(){
+    return new AppBar(
+      title: new Text("LessonTime"),
+      actions: <Widget>[
+        new IconButton(
+          onPressed: (){
+            Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Settings()),
+            );
+          },
+          icon: new Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+        ),
+        new IconButton(
+            onPressed: _signOut,
+            icon: new Icon(
+              Icons.clear,
+              color: Colors.white,
+        )) 
+      ],
+    );
+  }
+
   @override
   void dispose() {
     tabController.dispose();
@@ -86,20 +113,7 @@ class _MainContainerState extends State<MainContainer>
   }
   Scaffold lectNav(){
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
-          "LessonTime",
-          textAlign: TextAlign.center,
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: _signOut,
-              child: new Icon(
-                Icons.clear,
-                color: Colors.white,
-              ))
-        ],
-      ),
+      appBar: appBar(),
       body: new TabBarView(
         children: <Widget>[
           new NewPage("First"),
@@ -108,6 +122,7 @@ class _MainContainerState extends State<MainContainer>
         ],
         controller: tabController,
       ),
+      
       bottomNavigationBar: new Material(
           borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
           color: Colors.white,
@@ -134,20 +149,7 @@ class _MainContainerState extends State<MainContainer>
 
   Scaffold studNav() {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
-          "LessonTime",
-          textAlign: TextAlign.center,
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: _signOut,
-              child: new Icon(
-                Icons.clear,
-                color: Colors.white,
-              ))
-        ],
-      ),
+      appBar: appBar(),
       body: new TabBarView(
         children: <Widget>[
           new NewPage("First"),
@@ -182,20 +184,7 @@ class _MainContainerState extends State<MainContainer>
 
   Scaffold adminNav(){
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
-          "LessonTime(Admin)",
-          textAlign: TextAlign.center,
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: _signOut,
-              child: new Icon(
-                Icons.clear,
-                color: Colors.white,
-              ))
-        ],
-      ),
+      appBar: appBar(),
       body: new TabBarView(
         children: <Widget>[
           new AddUser(),

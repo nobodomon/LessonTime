@@ -26,6 +26,10 @@ class Auth implements BaseAuth {
     return user.uid;
   }
 
+  Future<String> editUser(String email, String password) async{
+    _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
   Future<FirebaseUser> currentUserAct() async{
     FirebaseUser user = await _firebaseAuth.currentUser();
     return user != null ? user : null;
