@@ -1,7 +1,9 @@
 
 import "package:flutter/material.dart";
+import 'package:lessontime/LectPages/Lessons.dart';
 
 import 'package:lessontime/StudPages/HomePage.dart';
+import 'package:lessontime/StudPages/QRPage.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
@@ -117,7 +119,7 @@ class _MainContainerState extends State<MainContainer>
       body: new TabBarView(
         children: <Widget>[
           new NewPage("First"),
-          new NewPage("Second"),
+          new Lessons(fbUser,cUser),
           new NewPage("Third")
         ],
         controller: tabController,
@@ -152,7 +154,7 @@ class _MainContainerState extends State<MainContainer>
       appBar: appBar(),
       body: new TabBarView(
         children: <Widget>[
-          new NewPage("First"),
+          new QRPage(fbUser,cUser),
           new HomePage(fbUser),
           //new NewPage("Second"),
           new NewPage("Third")

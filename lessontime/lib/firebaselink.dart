@@ -85,4 +85,38 @@ class firebaselink{
     print (identifier);
   return new Device(deviceName, identifier);
   }
+
+  Future<int> StartClass(String lectIC) async{
+    Lesson lesson = new Lesson(lectIC);
+    Firestore.instance.collection("Lessons").add(lesson.toJson());
+    return lesson.lessonID;
+  }
+
+  void StopClass(int key) async{
+     var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
+      String docID = snapshot.documents.first.documentID;
+      if(docID == null){
+        return false;
+      }
+      Firestore.instance.collection("Lessons").document(docID).setData({'isOpen' : false});
+      return true;
+    });
+  }
+
+  Future<bool> joinClass(Users user, int key) async{
+
+    var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
+      String docID = snapshot.documents.first.documentID;
+      if(docID == null){
+        return false;
+      }
+      Firestore.instance.collection("Lessons").document(docID).collection("Students").add(user.toJson());
+      return true;
+    });
+    return false;
+  }
+
+  Future<QuerySnapshot> getClass(int key) async{
+    return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments();
+  }
 }

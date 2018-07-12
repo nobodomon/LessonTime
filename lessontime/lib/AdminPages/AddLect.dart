@@ -36,7 +36,7 @@ class _AddLectState extends State<AddLect> {
     if (validateAndSave()) {
       try {
         var userId = 
-        await widget.auth.createUser(_email, _email,2);
+        await widget.auth.createUser(_email, _email,1);
             
         final form = formKey.currentState;
         setState(() {

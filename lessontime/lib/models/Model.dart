@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:device_info/device_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class Users {
   String key;
@@ -80,4 +81,37 @@ class CompleteUser{
 
   CompleteUser(this.fbUser, this.nUser);
 
+}
+
+class Lesson{
+  String key;
+  int lessonID;
+  String lectInCharge;
+  bool isOpen;
+  
+
+
+  Lesson(this.lectInCharge){
+    this.isOpen = true;
+    var rng = new Random();
+    int rand = 0;
+    while(rand <= 100000){
+      rand = rng.nextInt(999999);
+    }
+    this.lessonID = rand;
+  }
+
+  toJson() {
+    return {
+      "lessonID" : lessonID,
+      "lectInCharge": lectInCharge,
+      "isOpen": isOpen
+    };
+  }
+
+  Lesson.fromJson(Map data){
+    lessonID = data["lessonID"];
+    lectInCharge = data["lectInCharge"];
+    isOpen = data["isOpen"];
+  }
 }
