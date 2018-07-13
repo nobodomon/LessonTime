@@ -35,6 +35,11 @@ class firebaselink{
       String trimmed = email.substring(0,email.length-18).toUpperCase();
     return _fs.collection("Users").document(trimmed).snapshots();
   }
+  void setLastLogin(String adminNo){
+
+      String trimmed = adminNo.substring(0,adminNo.length-18).toUpperCase();
+      Firestore.instance.collection("Users").document(trimmed).setData({"lastLogin": DateTime.now().toIso8601String()}, merge: true);
+  }
 
   void createUserFs(String adminNo, int userType) async{
     var device = await getDeviceDetails().then((Device dev){
@@ -59,7 +64,7 @@ class firebaselink{
   }
 
   void editUser(String adminNo ){
-
+    
   }
 
   static Future<Device> getDeviceDetails() async {
@@ -98,7 +103,7 @@ class firebaselink{
       if(docID == null){
         return false;
       }
-      Firestore.instance.collection("Lessons").document(docID).setData({'isOpen' : false});
+      Firestore.instance.collection("Lessons").document(docID).setData({'isOpen' : false},merge:  true);
       return true;
     });
   }
@@ -117,6 +122,21 @@ class firebaselink{
   }
 
   Future<QuerySnapshot> getClass(int key) async{
-    return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments();
+    return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo:  key).snapshots().first;
   }
+
+  Future<QuerySnapshot> getClassList(int key) async{
+    /* var sc = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).snapshots().then((QuerySnapshot snapshot){
+      print(snapshot.documents.length);
+      qs = snapshot.documents.first.reference.collection("Students").snaphots();
+      print(qs.toString());
+      return qs;
+    });
+    return qs; */
+    return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
+      print(snapshot.documents.length);
+      return snapshot.documents.first.reference.collection("Students").getDocuments();
+    });
+  }
+
 }

@@ -29,7 +29,7 @@ class _LessonsState extends State<Lessons>{
       floatingActionButton: new FloatingActionButton(
               onPressed: ((){
                 Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => SearchLesson()),
+                  context, MaterialPageRoute(builder: (context) => SearchLesson(user.adminNo)),
                 );
               }),
               child: new Icon(Icons.search),
@@ -43,7 +43,7 @@ class _LessonsState extends State<Lessons>{
     _fblink.StartClass(lectIC).then((int id){
       lessonID = id;
       Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ViewLesson(id)),
+        context, MaterialPageRoute(builder: (context) => ViewLesson(id, lectIC)),
       );
     });
   }

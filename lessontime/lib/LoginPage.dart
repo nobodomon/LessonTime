@@ -97,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
           )),
         obscureText: true,
         autocorrect: false,
+        
         validator: (val) => val.isEmpty ? 'Password can\'t be empty.' : null,
         onSaved: (val) => _password = val,
       )),

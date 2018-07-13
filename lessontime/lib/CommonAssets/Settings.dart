@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:lessontime/auth.dart';
 
-
-class Settings extends StatefulWidget{
+class Settings extends StatelessWidget{
+  Auth auth = new Auth();
   @override
-  State<StatefulWidget> createState() => new _SettingsState();
-}
-
-class _SettingsState extends State<Settings>{
-  
-  static final formKey = new GlobalKey<FormState>();
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    String email;
     return new Scaffold(
+      backgroundColor: Colors.white,
       appBar: new AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: new FlatButton(
+        leading:new FlatButton(
           onPressed: (){
             Navigator.pop(context);
           },
-          child: Icon(Icons.arrow_back, color: Colors.indigoAccent,),
-        )
-        
+          child: Icon(Icons.arrow_downward, color: Colors.indigoAccent,),
+        ),
+        title: new TextField(
+          onChanged: (val) => email = val,
+          
+          decoration:  new InputDecoration(
+            border: InputBorder.none,
+            labelText: "Email"
+          ),
+        ),
+        actions: <Widget>[
+          new IconButton(
+          onPressed:()=>auth.editUser(),
+          icon: Icon(Icons.search, color: Colors.indigoAccent,),
+          )
+        ],
       ),
-      body: new Center(
-        child: new Text("Hello settings page say hi"),
-      ),
+      
     );
   }
 }

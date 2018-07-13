@@ -69,6 +69,7 @@ class _AddStudState extends State<AddStud> {
               borderRadius: new BorderRadius.circular(25.0),
             )),
         autocorrect: false,
+        autofocus: true,
         validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
         onSaved: (val) => _email = val+"@mymail.nyp.edu.sg",
       )),

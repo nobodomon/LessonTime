@@ -1,7 +1,7 @@
 
 import "package:flutter/material.dart";
 import 'package:lessontime/LectPages/Lessons.dart';
-
+import 'package:lessontime/LectPages/MyClasses.dart';
 import 'package:lessontime/StudPages/HomePage.dart';
 import 'package:lessontime/StudPages/QRPage.dart';
 import 'package:lessontime/auth.dart';
@@ -120,7 +120,7 @@ class _MainContainerState extends State<MainContainer>
         children: <Widget>[
           new NewPage("First"),
           new Lessons(fbUser,cUser),
-          new NewPage("Third")
+          new MyClasses(cUser.adminNo)
         ],
         controller: tabController,
       ),

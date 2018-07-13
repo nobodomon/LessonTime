@@ -8,7 +8,7 @@ class Users {
   String key;
   String adminNo;
   String email;
-  DateTime lastLogin;
+  String lastLogin;
   int userType;
   String courseGrp; //eg SF1601 or etc
 
@@ -19,7 +19,7 @@ class Users {
   }
 
   Users.fromSnapshot(DocumentSnapshot snapshot){
-    if(snapshot["DateTime"] == null){
+    if(snapshot["lastLogin"] == null){
         this.key = snapshot.documentID;
         this.email = snapshot["email"];
         this.adminNo = snapshot["adminNo"];
@@ -113,5 +113,12 @@ class Lesson{
     lessonID = data["lessonID"];
     lectInCharge = data["lectInCharge"];
     isOpen = data["isOpen"];
+  }
+
+  Lesson.fromSnapshot(DocumentSnapshot snapshot){
+    this.lessonID = snapshot["lessonID"];
+    this.lectInCharge = snapshot["lectInCharge"];
+    this.isOpen = snapshot["isOpen"];
+    this.key = snapshot.documentID;
   }
 }

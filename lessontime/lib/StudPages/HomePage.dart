@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage>{
         )
       );
     }else{
-      return null;
+      return new Container();
     }
   }
 

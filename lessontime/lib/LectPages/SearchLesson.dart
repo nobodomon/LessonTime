@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'ViewLesson.dart';
 
 class SearchLesson extends StatelessWidget{
+  String lectIC;
+  SearchLesson(this.lectIC);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -14,25 +17,27 @@ class SearchLesson extends StatelessWidget{
           onPressed: (){
             Navigator.pop(context);
           },
-          child: Icon(Icons.arrow_back, color: Colors.indigoAccent,),
+          child: Icon(Icons.arrow_downward, color: Colors.indigoAccent,),
         ),
         title: new TextField(
+          onChanged: (val) => searchVal = val,
+          
           decoration:  new InputDecoration(
-            border: new OutlineInputBorder(),
+            border: InputBorder.none,
             labelText: "Search..."
           ),
         ),
         actions: <Widget>[
-          new FlatButton(
+          new IconButton(
           onPressed: (){
-            Navigator.pop(context);
+            print(searchVal);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(int.parse(searchVal),lectIC)));
           },
-          child: Icon(Icons.search, color: Colors.indigoAccent,),
+          icon: Icon(Icons.search, color: Colors.indigoAccent,),
           )
         ],
       ),
       
     );
   }
-
 }

@@ -72,7 +72,7 @@ class _HomePanelState extends State<HomePanel>{
         )
       );
     }else{
-      return null;
+      return new Container();
     }
   }
 }
