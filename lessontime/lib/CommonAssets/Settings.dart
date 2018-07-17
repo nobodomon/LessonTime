@@ -18,22 +18,20 @@ class Settings extends StatelessWidget{
           },
           child: Icon(Icons.arrow_downward, color: Colors.indigoAccent,),
         ),
-        title: new TextField(
-          onChanged: (val) => email = val,
-          
-          decoration:  new InputDecoration(
-            border: InputBorder.none,
-            labelText: "Email"
-          ),
-        ),
-        actions: <Widget>[
-          new IconButton(
-          onPressed:()=>auth.editUser(),
-          icon: Icon(Icons.search, color: Colors.indigoAccent,),
-          )
-        ],
+        title: new Text("Settings", style: new TextStyle(color:  Colors.indigoAccent)),
       ),
-      
+      body: new Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          new ListTile(
+            leading: new Icon(Icons.lock),
+            title: new Text("Reset Password"),
+            subtitle: new Text("Send password reset email"),
+            onTap: ()=> auth.editUser(),
+          ),
+          
+        ],
+      )
     );
   }
 }

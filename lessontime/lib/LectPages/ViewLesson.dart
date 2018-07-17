@@ -42,15 +42,13 @@ class _ViewLessonState extends State<ViewLesson>{
               ),
               elevation: 0.0,
               actions: <Widget>[
-                stopButton(),
+                stopButton(context),
               ],
             ),
             body :ListView(
               children: snapshot.data.documents.map((DocumentSnapshot document){
-                print(document.documentID);
                 return ListTile(
                   title: new Text(document["adminNo"]),
-                  
                 );
               }).toList()
             ),
@@ -61,7 +59,7 @@ class _ViewLessonState extends State<ViewLesson>{
     );
   }
 
-  Widget stopButton(){
+  Widget stopButton(BuildContext context){
     return new FutureBuilder(
       future: fblink.getClass(lessonID),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -70,10 +68,30 @@ class _ViewLessonState extends State<ViewLesson>{
        } else{
          Lesson lesson = Lesson.fromSnapshot(snapshot.data.documents.first);
          if(lesson.lectInCharge == lectIC){
-           return new IconButton(
-             onPressed:(() => fblink.StopClass(lessonID)),
-             icon: new Icon(Icons.stop, color: Colors.redAccent,),
+           if(lesson.isOpen == false){
+             return new IconButton( 
+               onPressed:((){
+                fblink.ResumeClass(lessonID);
+                setState(() {
+                  SnackBar bar = new SnackBar(content:new Text("Lesson $lessonID has been resumed."),);
+                  Scaffold.of(context).showSnackBar(bar);
+                });
+              }),
+             icon: new Icon(Icons.play_arrow, color: Colors.greenAccent,),
            );
+           }else{
+            return new IconButton(
+              onPressed:((){
+                fblink.StopClass(lessonID);
+                setState(() {
+                  SnackBar bar = new SnackBar(content:new Text("Lesson $lessonID has been stopped."),);
+                  Scaffold.of(context).showSnackBar(bar);
+                });
+              }),
+              icon: new Icon(Icons.stop, color: Colors.redAccent,),
+            );
+           }
+           
          }else{
            return new IconButton(
              icon: new Icon(Icons.stop),

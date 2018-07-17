@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/firebaselink.dart';
 import 'package:lessontime/models/Model.dart';
+import 'package:lessontime/LectPages/ViewLesson.dart';
 
 class QRPage extends StatefulWidget {
   QRPage( this.fbuser, this.user, {Key key, this.title, this.auth,}) : super(key: key);
@@ -37,23 +39,55 @@ class _QRPageState extends State<QRPage> {
     return false;
   }
 
+  void validateAndView(BuildContext context) async{
+    if(validateAndSave()){
+      try{
+        firebaselink fbLink = new firebaselink();
+        await fbLink.checkifClassExist(int.parse(_lessonID)).then((bool result){
+          if(result == true){
+              _authHint = 'Lesson $_lessonID found, opening viewer.';
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(int.parse(_lessonID),user.adminNo)));
+          }else{
+              _authHint = 'Lesson $_lessonID not found!';
+          }
+          final form = formKey.currentState;
+          setState(() {
+              form.reset();
+              SnackBar bar = new SnackBar(content:new Text(_authHint),);
+              Scaffold.of(context).showSnackBar(bar);
+          });
+        });
+      }catch(error){
+        print(error.toString());
+      }
+    }
+  }
   void validateAndSubmit(BuildContext context) async {
     if (validateAndSave()) {
       try {
         firebaselink fbLink = new firebaselink();
-        bool success;
-        success = await fbLink.joinClass(user, int.parse(_lessonID));
-        if(success == false){
-          _authHint = 'Lesson $_lessonID not found';
-        }else{
-          _authHint = 'Lesson $_lessonID Joined';
+        try {
+          await fbLink.joinClass(user, int.parse(_lessonID)).then((bool result){
+            print("QRPage result: " + result.toString());
+            if(result== false){
+              _authHint = 'Lesson $_lessonID not found or you have already joined the class or the class is closed';
+            }else if(result == true){
+              _authHint = 'Lesson $_lessonID Joined';
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(int.parse(_lessonID),user.adminNo)));
+            }else{
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Assets.loader()));
+            }
+            final form = formKey.currentState;
+            setState(() {
+              form.reset();
+              SnackBar bar = new SnackBar(content:new Text(_authHint),);
+              Scaffold.of(context).showSnackBar(bar);
+            });
+          });
+        }catch(error){
+          print(error);
         }
-        final form = formKey.currentState;
-        setState(() {
-          form.reset();
-          SnackBar bar = new SnackBar(content:new Text(_authHint),);
-          Scaffold.of(context).showSnackBar(bar);
-        });
+        
       }catch (e) {
         setState(() {
           _authHint = 'Creation Error\n\n${e.toString()}';
@@ -88,9 +122,15 @@ class _QRPageState extends State<QRPage> {
     return [
       new FlatButton(
         key: new Key('register'),
-        child: new Text('Create'),
+        child: new Text('Join'),
         onPressed: () => validateAndSubmit(context)
-    )];
+      ),
+      new FlatButton(
+        child: new Text("View"),
+        onPressed: () => validateAndView(context)
+
+        )
+      ];
   }
 
   Widget hintText() {
@@ -149,4 +189,5 @@ class _QRPageState extends State<QRPage> {
       child: child,
     );
   }
+
 }

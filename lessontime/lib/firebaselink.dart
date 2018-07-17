@@ -96,7 +96,16 @@ class firebaselink{
     Firestore.instance.collection("Lessons").add(lesson.toJson());
     return lesson.lessonID;
   }
-
+  void ResumeClass(int key) async{
+    var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
+      String docID = snapshot.documents.first.documentID;
+      if(docID == null){
+        return false;
+      }
+      Firestore.instance.collection("Lessons").document(docID).setData({'isOpen' : true},merge:  true);
+      return true;
+    });
+  }
   void StopClass(int key) async{
      var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
       String docID = snapshot.documents.first.documentID;
@@ -108,35 +117,93 @@ class firebaselink{
     });
   }
 
-  Future<bool> joinClass(Users user, int key) async{
-
-    var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
-      String docID = snapshot.documents.first.documentID;
-      if(docID == null){
-        return false;
-      }
-      Firestore.instance.collection("Lessons").document(docID).collection("Students").add(user.toJson());
-      return true;
-    });
-    return false;
+  Future<bool> checkifClassExist(int key) async{
+    try{
+      return await Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
+        int count = snapshot.documents.length;
+        if(count > 0){
+          return true;
+        }else{
+          return false;
+        }
+      });
+    }catch(error){
+      print(error.toString());
+    }
   }
+
+  Future<bool> joinClass(Users user, int key) async{
+    bool existQuery;
+    try{
+      return await checkIfInClass(key, user.adminNo).then((bool result){
+      print("joinClass result: " + result.toString());
+      existQuery = result;
+      return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
+        String docID = snapshot.documents.first.documentID;
+        if(docID == null){
+          return false;
+        }else{
+          if(existQuery == true){
+            return false;
+          }else if(existQuery == false){
+            bool isOpen = snapshot.documents.first.data["isOpen"];
+            if(isOpen){
+              Firestore.instance.collection("Lessons").document(docID).collection("Students").add(user.toJson());
+              print("Added to class: " + docID);
+              return true;
+            }else{
+              print("Class is closed");
+              return false;
+            }
+          }else{
+            return false;
+          }
+        }
+      });
+    }); 
+    }catch(error){
+      print(error);
+    }
+  }
+
+
 
   Future<QuerySnapshot> getClass(int key) async{
     return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo:  key).snapshots().first;
   }
 
   Future<QuerySnapshot> getClassList(int key) async{
-    /* var sc = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).snapshots().then((QuerySnapshot snapshot){
-      print(snapshot.documents.length);
-      qs = snapshot.documents.first.reference.collection("Students").snaphots();
-      print(qs.toString());
-      return qs;
-    });
-    return qs; */
     return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
       print(snapshot.documents.length);
       return snapshot.documents.first.reference.collection("Students").getDocuments();
     });
   }
 
+  Future<Stream<QuerySnapshot>> getClassListSnapshot(int key) async{
+    return Firestore.instance.collection("Lessons").where("lessonID",isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
+      print(snapshot.documents.length);
+      return snapshot.documents.first.reference.collection("Students").snapshots();
+    });
+
+  }
+
+  Future<bool> checkIfInClass(int key, String adminNo) async{
+    try{
+      return await Firestore.instance.collection("Lessons").where("lessonID",isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
+        return snapshot.documents.first.reference.collection("Students").where("adminNo", isEqualTo: adminNo).limit(1).getDocuments().then((QuerySnapshot){
+          int found = QuerySnapshot.documents.length;
+          print(found.toString() + " record found");
+          if(found > 0){
+            return true;
+          }else{
+            return false;
+          }
+        });
+        
+      });
+    }catch(e){
+      print(e.toString());
+    }
+    
+  }
 }

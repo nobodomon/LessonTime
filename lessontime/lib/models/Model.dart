@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:device_info/device_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lessontime/firebaselink.dart';
 import 'dart:math';
 
 class Users {
@@ -95,8 +96,13 @@ class Lesson{
     this.isOpen = true;
     var rng = new Random();
     int rand = 0;
-    while(rand <= 100000){
+    bool dupe = true;
+    firebaselink fblink = new firebaselink();
+    while(rand <= 100000 && dupe == true){
       rand = rng.nextInt(999999);
+      fblink.checkifClassExist(rand).then((bool result){
+        dupe = result;
+      });
     }
     this.lessonID = rand;
   }

@@ -126,7 +126,6 @@ class _MainContainerState extends State<MainContainer>
       ),
       
       bottomNavigationBar: new Material(
-          borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
           color: Colors.white,
           child: new TabBar(
             controller: tabController,
@@ -162,7 +161,6 @@ class _MainContainerState extends State<MainContainer>
         controller: tabController,
       ),
       bottomNavigationBar: new Material(
-          borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
           color: Colors.white,
           child: new TabBar(
             controller: tabController,
@@ -196,7 +194,6 @@ class _MainContainerState extends State<MainContainer>
         controller: tabController,
       ),
       bottomNavigationBar: new Material(
-          borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
           color: Colors.white,
           child: new TabBar(
             controller: tabController,
