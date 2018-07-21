@@ -39,8 +39,8 @@ class _LessonsState extends State<Lessons>{
 
   void startClass(String lectIC){
     firebaselink _fblink = new firebaselink();
-    int lessonID;
-    _fblink.StartClass(lectIC).then((int id){
+    String lessonID;
+    _fblink.StartClass(lectIC).then((String id){
       lessonID = id;
       Navigator.push(
         context, MaterialPageRoute(builder: (context) => ViewLesson(id, lectIC)),

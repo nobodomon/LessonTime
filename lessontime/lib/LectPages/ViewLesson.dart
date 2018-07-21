@@ -7,7 +7,7 @@ import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/models/Model.dart';
 
 class ViewLesson extends StatefulWidget{
-  final int lessonID;
+  final String lessonID;
   final String lectIC;
   ViewLesson(this.lessonID, this.lectIC);
   @override
@@ -16,7 +16,7 @@ class ViewLesson extends StatefulWidget{
 }
 
 class _ViewLessonState extends State<ViewLesson>{
-  int lessonID;
+  String lessonID;
   String lectIC;
   _ViewLessonState(this.lessonID, this.lectIC);
   firebaselink fblink = new firebaselink();

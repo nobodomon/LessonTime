@@ -31,7 +31,7 @@ class SearchLesson extends StatelessWidget{
           new IconButton(
           onPressed: (){
             print(searchVal);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(int.parse(searchVal),lectIC)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(searchVal,lectIC)));
           },
           icon: Icon(Icons.search, color: Colors.indigoAccent,),
           )

@@ -43,10 +43,10 @@ class _QRPageState extends State<QRPage> {
     if(validateAndSave()){
       try{
         firebaselink fbLink = new firebaselink();
-        await fbLink.checkifClassExist(int.parse(_lessonID)).then((bool result){
+        await fbLink.checkifClassExist(_lessonID).then((bool result){
           if(result == true){
               _authHint = 'Lesson $_lessonID found, opening viewer.';
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(int.parse(_lessonID),user.adminNo)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(_lessonID,user.adminNo)));
           }else{
               _authHint = 'Lesson $_lessonID not found!';
           }
@@ -67,13 +67,13 @@ class _QRPageState extends State<QRPage> {
       try {
         firebaselink fbLink = new firebaselink();
         try {
-          await fbLink.joinClass(user, int.parse(_lessonID)).then((bool result){
+          await fbLink.joinClass(user, _lessonID).then((bool result){
             print("QRPage result: " + result.toString());
             if(result== false){
               _authHint = 'Lesson $_lessonID not found or you have already joined the class or the class is closed';
             }else if(result == true){
               _authHint = 'Lesson $_lessonID Joined';
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(int.parse(_lessonID),user.adminNo)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(_lessonID,user.adminNo)));
             }else{
               Navigator.push(context, MaterialPageRoute(builder: (context) => Assets.loader()));
             }

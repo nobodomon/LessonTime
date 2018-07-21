@@ -91,12 +91,13 @@ class firebaselink{
   return new Device(deviceName, identifier);
   }
 
-  Future<int> StartClass(String lectIC) async{
+  Future<String> StartClass(String lectIC) async{
     Lesson lesson = new Lesson(lectIC);
     Firestore.instance.collection("Lessons").add(lesson.toJson());
     return lesson.lessonID;
   }
-  void ResumeClass(int key) async{
+  void ResumeClass(String key) async{
+    key = key.toUpperCase();
     var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
       String docID = snapshot.documents.first.documentID;
       if(docID == null){
@@ -106,7 +107,8 @@ class firebaselink{
       return true;
     });
   }
-  void StopClass(int key) async{
+  void StopClass(String key) async{
+    key = key.toUpperCase();
      var query = Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
       String docID = snapshot.documents.first.documentID;
       if(docID == null){
@@ -117,7 +119,8 @@ class firebaselink{
     });
   }
 
-  Future<bool> checkifClassExist(int key) async{
+  Future<bool> checkifClassExist(String key) async{
+    key = key.toUpperCase();
     try{
       return await Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
         int count = snapshot.documents.length;
@@ -132,7 +135,8 @@ class firebaselink{
     }
   }
 
-  Future<bool> joinClass(Users user, int key) async{
+  Future<bool> joinClass(Users user, String key) async{
+    key = key.toUpperCase();
     bool existQuery;
     try{
       return await checkIfInClass(key, user.adminNo).then((bool result){
@@ -168,18 +172,21 @@ class firebaselink{
 
 
 
-  Future<QuerySnapshot> getClass(int key) async{
+  Future<QuerySnapshot> getClass(String key) async{
+    key = key.toUpperCase();
     return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo:  key).snapshots().first;
   }
 
-  Future<QuerySnapshot> getClassList(int key) async{
+  Future<QuerySnapshot> getClassList(String key) async{
+    key = key.toUpperCase();
     return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
       print(snapshot.documents.length);
       return snapshot.documents.first.reference.collection("Students").getDocuments();
     });
   }
 
-  Future<Stream<QuerySnapshot>> getClassListSnapshot(int key) async{
+  Future<Stream<QuerySnapshot>> getClassListSnapshot(String key) async{
+    key = key.toUpperCase();
     return Firestore.instance.collection("Lessons").where("lessonID",isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
       print(snapshot.documents.length);
       return snapshot.documents.first.reference.collection("Students").snapshots();
@@ -187,7 +194,8 @@ class firebaselink{
 
   }
 
-  Future<bool> checkIfInClass(int key, String adminNo) async{
+  Future<bool> checkIfInClass(String key, String adminNo) async{
+    key = key.toUpperCase();
     try{
       return await Firestore.instance.collection("Lessons").where("lessonID",isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
         return snapshot.documents.first.reference.collection("Students").where("adminNo", isEqualTo: adminNo).limit(1).getDocuments().then((QuerySnapshot){

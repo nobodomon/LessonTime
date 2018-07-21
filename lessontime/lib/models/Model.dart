@@ -4,6 +4,7 @@ import 'package:device_info/device_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/firebaselink.dart';
 import 'dart:math';
+import 'package:random_string/random_string.dart';
 
 class Users {
   String key;
@@ -86,20 +87,20 @@ class CompleteUser{
 
 class Lesson{
   String key;
-  int lessonID;
+  String lessonID;
   String lectInCharge;
   bool isOpen;
+  String ip;
   
 
 
   Lesson(this.lectInCharge){
     this.isOpen = true;
-    var rng = new Random();
-    int rand = 0;
+    String rand = randomAlphaNumeric(6);
     bool dupe = true;
     firebaselink fblink = new firebaselink();
-    while(rand <= 100000 && dupe == true){
-      rand = rng.nextInt(999999);
+    while(dupe == true){
+      rand = randomAlphaNumeric(6).toUpperCase();
       fblink.checkifClassExist(rand).then((bool result){
         dupe = result;
       });
