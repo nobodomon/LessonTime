@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/auth.dart';
-import 'package:lessontime/firebaselink.dart';
+import 'package:lessontime/FirebaseLink.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/LectPages/ViewLesson.dart';
 
@@ -11,8 +13,8 @@ class QRPage extends StatefulWidget {
 
   final String title;
   final BaseAuth auth;
-  Users user;
-  FirebaseUser fbuser;
+  final Users user;
+  final FirebaseUser fbuser;
   @override
   _QRPageState createState() => new _QRPageState(user,fbuser);
 }
@@ -42,7 +44,7 @@ class _QRPageState extends State<QRPage> {
   void validateAndView(BuildContext context) async{
     if(validateAndSave()){
       try{
-        firebaselink fbLink = new firebaselink();
+        FirebaseLink fbLink = new FirebaseLink();
         await fbLink.checkifClassExist(_lessonID).then((bool result){
           if(result == true){
               _authHint = 'Lesson $_lessonID found, opening viewer.';
@@ -62,17 +64,43 @@ class _QRPageState extends State<QRPage> {
       }
     }
   }
+
+  Future<Null> confirmJoin(BuildContext ct) async{
+    validateAndSave();
+    switch(
+      await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: new Text("Confirm to join $_lessonID?"),
+          children: <Widget>[
+            new Padding(
+              padding: new EdgeInsets.all(25.0),
+              child: new Text("You will be added to this lesson."),
+              ),
+            new FlatButton( 
+               onPressed:((){
+                validateAndSubmit(ct);
+                Navigator.pop(context);
+              }),
+             child: new Text("Confirm", style: new TextStyle(color: Colors.green),),
+            )
+          ],
+        )
+      )
+    ){}
+  }
+
   void validateAndSubmit(BuildContext context) async {
     if (validateAndSave()) {
       try {
-        firebaselink fbLink = new firebaselink();
+        FirebaseLink fbLink = new FirebaseLink();
         try {
-          await fbLink.joinClass(user, _lessonID).then((bool result){
+          await fbLink.joinClass(user, _lessonID).then((JoinClassResult result){
             print("QRPage result: " + result.toString());
-            if(result== false){
-              _authHint = 'Lesson $_lessonID not found or you have already joined the class or the class is closed';
-            }else if(result == true){
-              _authHint = 'Lesson $_lessonID Joined';
+            if(result.success == false){
+              _authHint = result.error;
+            }else if(result.success == true){
+              _authHint = result.error;
               Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(_lessonID,user.adminNo)));
             }else{
               Navigator.push(context, MaterialPageRoute(builder: (context) => Assets.loader()));
@@ -123,7 +151,7 @@ class _QRPageState extends State<QRPage> {
       new FlatButton(
         key: new Key('register'),
         child: new Text('Join'),
-        onPressed: () => validateAndSubmit(context)
+        onPressed: () => confirmJoin(context)
       ),
       new FlatButton(
         child: new Text("View"),

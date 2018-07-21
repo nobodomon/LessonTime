@@ -6,7 +6,7 @@ import 'package:lessontime/auth.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 
 class AddUser extends StatefulWidget{
-  BaseAuth auth;
+  final BaseAuth auth = new Auth();
   @override
   State<StatefulWidget> createState() => new _AddUserState();
 }

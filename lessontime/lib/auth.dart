@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'firebaselink.dart';
+import 'FirebaseLink.dart';
 
 abstract class BaseAuth {
 
@@ -16,14 +16,14 @@ class Auth implements BaseAuth {
 
   Future<String> signIn(String email, String password) async {
     FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    firebaselink _link = new firebaselink();
+    FirebaseLink _link = new FirebaseLink();
     _link.setLastLogin(email);
     return user.uid;
   }
 
   Future<String> createUser(String email, String password, int userType) async {
     FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-    firebaselink _link = new firebaselink();
+    FirebaseLink _link = new FirebaseLink();
     _link.createUserFs(email, userType);
     return user.uid;
   }

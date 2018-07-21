@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:lessontime/LoginPage.dart';
 import 'package:lessontime/root_page.dart';
 import 'package:lessontime/auth.dart';
-import 'package:lessontime/MainContainer.dart';
 
 final FirebaseApp app = FirebaseApp(
   name: 'LessonTime',

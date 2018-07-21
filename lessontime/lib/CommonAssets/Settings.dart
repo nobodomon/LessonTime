@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lessontime/auth.dart';
 
 class Settings extends StatelessWidget{
-  Auth auth = new Auth();
+  final Auth auth = new Auth();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    String email;
     return new Scaffold(
       backgroundColor: Colors.white,
       appBar: new AppBar(

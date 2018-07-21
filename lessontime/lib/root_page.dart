@@ -1,8 +1,4 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:lessontime/firebaselink.dart';
-import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/LoginPage.dart';
 import 'package:lessontime/MainContainer.dart';

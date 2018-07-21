@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'ViewLesson.dart';
 
 class SearchLesson extends StatelessWidget{
-  String lectIC;
+  final String lectIC;
   SearchLesson(this.lectIC);
   @override
   Widget build(BuildContext context) {

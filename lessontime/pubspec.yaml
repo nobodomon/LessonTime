@@ -17,6 +17,7 @@ dependencies:
   bubble_tab_indicator:
   random_string:
   http:
+  location:
 
 
 dev_dependencies:

@@ -8,12 +8,13 @@ import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/CommonAssets/Settings.dart';
-import 'package:lessontime/firebaselink.dart';
+import 'package:lessontime/FirebaseLink.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/AdminPages/AddUser.dart';
 import 'package:lessontime/AdminPages/HomePanel.dart';
+import 'package:lessontime/AdminPages/AdminSettings.dart';
 
 class MainContainer extends StatefulWidget {
   MainContainer({this.auth, this.onSignOut});
@@ -49,7 +50,7 @@ class _MainContainerState extends State<MainContainer>
   @override
   Widget build(BuildContext context){
     //return studNav();
-    firebaselink _fb = new firebaselink();
+    FirebaseLink _fb = new FirebaseLink();
     if(fbUser == null){
       return Assets.loader();
     }else{
@@ -189,7 +190,7 @@ class _MainContainerState extends State<MainContainer>
         children: <Widget>[
           new AddUser(),
           new HomePanel(fbUser),
-          new NewPage("Third")
+          new AdminSettings(fbUser),
         ],
         controller: tabController,
       ),

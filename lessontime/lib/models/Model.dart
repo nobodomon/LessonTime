@@ -1,10 +1,12 @@
 
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:device_info/device_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lessontime/firebaselink.dart';
-import 'dart:math';
+import 'package:lessontime/FirebaseLink.dart';
 import 'package:random_string/random_string.dart';
+import 'package:http/http.dart';
 
 class Users {
   String key;
@@ -12,7 +14,7 @@ class Users {
   String email;
   String lastLogin;
   int userType;
-  String courseGrp; //eg SF1601 or etc
+
 
 
   Users(this.email, this.userType){
@@ -54,7 +56,6 @@ class Users {
 }
 
 
-
 class Device{
   String key;
   String deviceName;
@@ -90,19 +91,22 @@ class Lesson{
   String lessonID;
   String lectInCharge;
   bool isOpen;
-  String ip;
+  String ipAddr;
   
 
 
   Lesson(this.lectInCharge){
     this.isOpen = true;
-    String rand = randomAlphaNumeric(6);
-    bool dupe = true;
-    firebaselink fblink = new firebaselink();
+    String rand = randomAlphaNumeric(6).toUpperCase();
+    bool dupe;
+    FirebaseLink fblink = new FirebaseLink();
+    fblink.checkifClassExist(rand).then((bool){
+      dupe = bool;
+    });
     while(dupe == true){
       rand = randomAlphaNumeric(6).toUpperCase();
-      fblink.checkifClassExist(rand).then((bool result){
-        dupe = result;
+      fblink.checkifClassExist(rand).then((bool){
+        dupe = bool;
       });
     }
     this.lessonID = rand;
@@ -112,7 +116,8 @@ class Lesson{
     return {
       "lessonID" : lessonID,
       "lectInCharge": lectInCharge,
-      "isOpen": isOpen
+      "isOpen": isOpen,
+      "ipAddr": ipAddr
     };
   }
 
@@ -120,12 +125,60 @@ class Lesson{
     lessonID = data["lessonID"];
     lectInCharge = data["lectInCharge"];
     isOpen = data["isOpen"];
+    ipAddr = data["ipAddr"];
   }
 
   Lesson.fromSnapshot(DocumentSnapshot snapshot){
     this.lessonID = snapshot["lessonID"];
     this.lectInCharge = snapshot["lectInCharge"];
     this.isOpen = snapshot["isOpen"];
+    this.ipAddr = snapshot["ipAddr"];
     this.key = snapshot.documentID;
+  }
+
+  Future<String> getIP() async{
+    final url = 'https://httpbin.org/ip';
+    var httpClient = new Client();
+    
+    var response = await httpClient.get(url);
+    return JSON.decode(response.body)["origin"];
+  }
+}
+
+class JoinClassResult{
+  bool success;
+  String error;
+  JoinClassResult(this.success, this.error);
+}
+
+class LocationResult{
+  bool success;
+  String error;
+  LocationResult(this.success,this.error);
+}
+
+class SettingsModel{
+  bool ipCheck;
+  bool locationCheck;
+  String settingsLastSetBy;
+
+  toJson(){
+    return{
+      "ipCheck" : ipCheck,
+      "locationCheck" : locationCheck,
+      "settingsLastSetBy" : settingsLastSetBy
+    };
+  }
+
+  SettingsModel.fromJson(Map data){
+    ipCheck = data["ipCheck"];
+    locationCheck = data["locationCheck"];
+    settingsLastSetBy = data["settingsLastSetBy"];
+  }
+
+  SettingsModel.fromSnapshot(AsyncSnapshot snapshot){
+    this.ipCheck = snapshot.data["ipCheck"];
+    this.locationCheck = snapshot.data["locationCheck"];
+    this.settingsLastSetBy = snapshot.data["settingsLasetSetBy"];
   }
 }

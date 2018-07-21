@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/models/Model.dart';
-import 'dart:async';
-import 'package:lessontime/auth.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
-import 'package:lessontime/firebaselink.dart';
+import 'package:lessontime/FirebaseLink.dart';
 
 class HomePanel extends StatefulWidget{
   HomePanel(this.fbUser);
@@ -29,7 +27,7 @@ class _HomePanelState extends State<HomePanel>{
   }
   @override
   Widget build(BuildContext context) {
-    firebaselink _fb = new firebaselink();
+    FirebaseLink _fb = new FirebaseLink();
     return FutureBuilder(
       future: _fb.getUserOnceFs(fbuser.email),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
