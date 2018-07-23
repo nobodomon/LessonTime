@@ -115,7 +115,7 @@ class FirebaseLink{
     var httpClient = new Client();
     
     var response = await httpClient.get(url);
-    return JSON.decode(response.body)["origin"];
+    return json.decode(response.body)["origin"];
   }
 
 
@@ -128,7 +128,7 @@ class FirebaseLink{
       //Nyp owns 202.12.94.0 - 202.12.95.255
       int thirdNum = int.parse(split[2]);
       int fourthNum = int.parse(split[3]);
-      if(thirdNum == 94 | 95){
+      if(thirdNum == 94 || fourthNum == 95){
         if(fourthNum >= 0  && fourthNum <= 255){
           return true;
         }else{
