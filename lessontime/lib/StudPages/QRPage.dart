@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
+import 'package:lessontime/Logo.dart';
 import 'package:lessontime/auth.dart';
 import 'package:lessontime/FirebaseLink.dart';
 import 'package:lessontime/models/Model.dart';
@@ -129,36 +130,58 @@ class _QRPageState extends State<QRPage> {
     }
   }
 
-  List<Widget> usernameAndPassword() {
-    return [
-      padded(child: new TextFormField(
+  Widget classIDField() {
+    Color select = Colors.indigo[400];
+    return padded(child: new TextFormField(
         key: new Key('LessonID'),
-
         decoration: new InputDecoration(
-            labelText: 'Lesson ID',
-            border: new OutlineInputBorder(
-              borderRadius: new BorderRadius.circular(25.0),
-            )),
+          isDense: true,
+          hintText: "    Lesson ID",
+          hintStyle: new TextStyle(
+            color: Colors.white
+          ),
+          prefixIcon: Icon(Icons.group_add),
+          fillColor: select,
+          filled: true,
+          border: new OutlineInputBorder(
+            borderSide: BorderSide(color: select, width: 2.0, style: BorderStyle.solid),
+            borderRadius: new BorderRadius.circular(50.0),
+          )
+        ),
         autocorrect: false,
         validator: (val) => val.isEmpty ? 'Code can\'t be empty.' : null,
         onSaved: (val) => _lessonID = val,
-      )),
-    ];
+      )
+    );
   }
 
   List<Widget> submitWidgets(BuildContext context){
+    Color select = Colors.indigo[400];
     return [
-      new FlatButton(
-        key: new Key('register'),
-        child: new Text('Join'),
-        onPressed: () => confirmJoin(context)
-      ),
-      new FlatButton(
-        child: new Text("View"),
-        onPressed: () => validateAndView(context)
-
+      padded(
+        child: new RaisedButton(
+          textColor: Colors.white,
+          color: select,
+          padding: EdgeInsets.all(15.0),
+          shape: StadiumBorder(
+          ),
+          child: new Text('View'),
+          onPressed:()=> validateAndView(context)
         )
-      ];
+      ),
+      padded(
+        child: new RaisedButton(
+          textColor: Colors.white,
+          color: select,
+          padding: EdgeInsets.all(15.0),
+          shape: StadiumBorder(
+          ),
+          key: new Key('register'),
+          child: new Text('Join'),
+          onPressed:()=> confirmJoin(context)
+        )
+      ),
+    ];
   }
 
   Widget hintText() {
@@ -176,39 +199,45 @@ class _QRPageState extends State<QRPage> {
 
   @override
   Widget build(BuildContext context) {
-      return new Scaffold(
-        resizeToAvoidBottomPadding: false,
-        backgroundColor: Colors.transparent,
-        body :new Container(
-            padding: const EdgeInsets.all(16.0),
-            child: new Column(
-                children: [
-                  new Card(
+    return new Scaffold(
+      resizeToAvoidBottomPadding: false,
+      backgroundColor: Colors.indigo,
+      body :new Center(
+        child: new Card(
+          margin: EdgeInsets.all(50.0),
+          color: Colors.white,
+          elevation: 2.0,
+          child: new Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Logo(150.0,"lib/Assets/JoinClass.png"),
+                new Center(
+                  child: new Text("Join a class", style: TextStyle(fontWeight: FontWeight.w900),),
+                ),
+                new Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: new Form(
+                      key: formKey,
                       child: new Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const ListTile(
-                              leading: Icon(Icons.group_add),
-                              title: const Text("Join class"),
-                            ),
-                            new Container(
-                                padding: const EdgeInsets.all(16.0),
-                                child: new Form(
-                                    key: formKey,
-                                    child: new Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: usernameAndPassword() + submitWidgets(context),
-                                    ),
-                                    
-                                )
-                            ),
-                          ])
-                  ),
-                  //hintText()
-                ]
-            )
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          classIDField(), 
+                          new Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: submitWidgets(context)
+                          ),
+                        ],
+                        
+                      ),
+                  )
+                ),
+              ]
           )
-      );
+        ),
+      )
+    );
   }
 
   Widget padded({Widget child}) {

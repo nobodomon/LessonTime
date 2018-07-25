@@ -27,6 +27,12 @@ class FirebaseLink{
       Firestore.instance.collection("Users").document(trimmed).setData({"lastLogin": DateTime.now().toIso8601String()}, merge: true);
   }
 
+  void setLogonIP(String adminNo) async{
+      String trimmed = adminNo.substring(0,adminNo.length-18).toUpperCase();
+      String ip = await getIP();
+      Firestore.instance.collection("Users").document(trimmed).setData({"logonIP": ip}, merge: true);
+  }
+
   void createUserFs(String adminNo, int userType) async{
     await getDeviceDetails().then((Device dev){
       adminNo.toUpperCase();
@@ -126,11 +132,17 @@ class FirebaseLink{
       //Acceptable range of 4th subnet 0-255
       //Using this as we did a whois on nyp domain
       //Nyp owns 202.12.94.0 - 202.12.95.255
+      int firstNum = int.parse(split[0]);
+      int secondNum = int.parse(split[1]);
       int thirdNum = int.parse(split[2]);
       int fourthNum = int.parse(split[3]);
-      if(thirdNum == 94 || fourthNum == 95){
-        if(fourthNum >= 0  && fourthNum <= 255){
-          return true;
+      if(firstNum == 202 && secondNum == 12){
+        if(thirdNum == 94 || thirdNum == 95){
+          if(fourthNum >= 0  && fourthNum <= 255){
+            return true;
+          }else{
+            return false;
+          }
         }else{
           return false;
         }
@@ -248,7 +260,6 @@ class FirebaseLink{
   Future<QuerySnapshot> getClassList(String key) async{
     key = key.toUpperCase();
     return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
-      print(snapshot.documents.length);
       return snapshot.documents.first.reference.collection("Students").getDocuments();
     });
   }
@@ -256,7 +267,6 @@ class FirebaseLink{
   Future<Stream<QuerySnapshot>> getClassListSnapshot(String key) async{
     key = key.toUpperCase();
     return Firestore.instance.collection("Lessons").where("lessonID",isEqualTo: key).snapshots().first.then((QuerySnapshot snapshot){
-      print(snapshot.documents.length);
       return snapshot.documents.first.reference.collection("Students").snapshots();
     });
 

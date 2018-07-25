@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
+import 'package:lessontime/Logo.dart';
 import 'ViewLesson.dart';
 class MyClasses extends StatefulWidget{
   final String lectIC;
@@ -24,20 +25,21 @@ class _MyClassesState extends State<MyClasses>{
         }else{
           return new Scaffold(
           backgroundColor: Colors.white,
-          body: ListView(
-            children: snapshot.data.documents.reversed.map((DocumentSnapshot document){
-              print(snapshot.data.documents.length);
-              print(document["lessonID"]);
-              return ListTile(
-                title: new Text(document["lessonID"].toString()),
-                subtitle: new Text(document["isOpen"].toString()),
-                onTap: (){Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder:(context) => ViewLesson(document["lessonID"],lectIC)));
-                });
-            }).toList()
-            )
+          body: 
+          new ListView(
+                children: snapshot.data.documents.reversed.map((DocumentSnapshot document){
+                  print(snapshot.data.documents.length);
+                  print(document["lessonID"]);
+                  return ListTile(
+                    title: new Text("Class ID: " + document["lessonID"].toString()),
+                    subtitle: new Text("Is this class open? " + document["isOpen"].toString()),
+                    onTap: (){Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder:(context) => ViewLesson(document["lessonID"],lectIC)));
+                    });
+                }).toList()
+          ) 
           );
         }
       });

@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 class Logo extends StatelessWidget{
   final double height;
-  Logo(this.height);
+  final String assetPath;
+  Logo(this.height,this.assetPath);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Container(
       child: new Image.asset(
-        'lib/Assets/LessonTime.png',
+        assetPath,
         fit: BoxFit.cover,
         height: height,
       ),

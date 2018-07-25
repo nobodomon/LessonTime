@@ -62,6 +62,7 @@ class _AdminSettingsState extends State<AdminSettings>{
                     },
                     secondary: const Icon(Icons.network_check,color: Colors.indigoAccent,),
                   ),
+                  new Divider(),
                   new SwitchListTile(
                     key: new Key("locationCheck"),
                     title: const Text("Check Location Toggle"),

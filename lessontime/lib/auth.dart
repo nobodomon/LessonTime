@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'FirebaseLink.dart';
+import 'firebaselink.dart';
 
 abstract class BaseAuth {
 
@@ -18,6 +18,7 @@ class Auth implements BaseAuth {
     FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
     FirebaseLink _link = new FirebaseLink();
     _link.setLastLogin(email);
+    _link.setLogonIP(email);
     return user.uid;
   }
 

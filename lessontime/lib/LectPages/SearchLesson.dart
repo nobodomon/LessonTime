@@ -24,7 +24,7 @@ class SearchLesson extends StatelessWidget{
           
           decoration:  new InputDecoration(
             border: InputBorder.none,
-            labelText: "Search..."
+            hintText: "Search..."
           ),
         ),
         actions: <Widget>[

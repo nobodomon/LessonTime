@@ -14,7 +14,7 @@ class Users {
   String email;
   String lastLogin;
   int userType;
-
+  String logonIP;
 
 
   Users(this.email, this.userType){
@@ -34,6 +34,7 @@ class Users {
         this.adminNo = snapshot["adminNo"];
         this.userType = snapshot['userType'];
         this.lastLogin = snapshot['lastLogin'];
+        this.logonIP = snapshot["logonIP"];
     }
   }
       

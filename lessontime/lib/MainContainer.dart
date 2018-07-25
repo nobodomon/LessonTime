@@ -78,6 +78,7 @@ class _MainContainerState extends State<MainContainer>
   AppBar appBar(){
     return new AppBar(
       title: new Text("LessonTime"),
+      elevation: 0.0,
       actions: <Widget>[
         new IconButton(
           onPressed: (){
@@ -125,8 +126,9 @@ class _MainContainerState extends State<MainContainer>
         ],
         controller: tabController,
       ),
-      
+      backgroundColor: Colors.indigo,
       bottomNavigationBar: new Material(
+        elevation: 5.0,
           color: Colors.white,
           child: new TabBar(
             controller: tabController,
@@ -151,6 +153,7 @@ class _MainContainerState extends State<MainContainer>
 
   Scaffold studNav() {
     return new Scaffold(
+      backgroundColor: Colors.indigo,
       appBar: appBar(),
       body: new TabBarView(
         children: <Widget>[
@@ -162,6 +165,7 @@ class _MainContainerState extends State<MainContainer>
         controller: tabController,
       ),
       bottomNavigationBar: new Material(
+        elevation: 5.0,
           color: Colors.white,
           child: new TabBar(
             controller: tabController,
@@ -195,6 +199,7 @@ class _MainContainerState extends State<MainContainer>
         controller: tabController,
       ),
       bottomNavigationBar: new Material(
+        elevation: 5.0,
           color: Colors.white,
           child: new TabBar(
             controller: tabController,

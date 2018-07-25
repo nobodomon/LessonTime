@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lessontime/Logo.dart';
 import 'package:lessontime/auth.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     return false;
   }
 
-  void validateAndSubmit() async {
+  void validateAndSubmit(BuildContext context) async {
     if (validateAndSave()) {
       try {
         String userId = _formType == FormType.login
@@ -78,12 +79,20 @@ class _LoginPageState extends State<LoginPage> {
     return [
       padded(child: new TextFormField(
         key: new Key('email'),
-
+        
         decoration: new InputDecoration(
-            labelText: 'Admin Number',
-            border: new OutlineInputBorder(
-              borderRadius: new BorderRadius.circular(25.0),
-            )),
+          isDense: true,
+          filled: true,
+          fillColor: Color.fromRGBO(63,81,181 , 70.0),
+          prefixIcon: Icon(Icons.person,color: Colors.white),
+          hintText: "    Admin Number",
+          hintStyle: TextStyle(
+            color: Colors.white
+          ),
+          border: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(50.0),
+            borderSide: BorderSide.none
+        )),
         autocorrect: false,
         validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
         onSaved: (val) => _email = val+"@mymail.nyp.edu.sg",
@@ -91,9 +100,17 @@ class _LoginPageState extends State<LoginPage> {
       padded(child: new TextFormField(
         key: new Key('password'),
         decoration: new InputDecoration(
-          labelText: 'Password',
+          isDense: true,
+          filled: true,
+          fillColor: Color.fromRGBO(63,81,181 , 70.0),
+          prefixIcon: Icon(Icons.lock,color: Colors.white),
+          hintText: "    Password",
+          hintStyle: TextStyle(
+            color: Colors.white
+          ),
           border: new OutlineInputBorder(
-            borderRadius: new BorderRadius.circular(25.0),
+            borderRadius: new BorderRadius.circular(50.0),
+            borderSide: BorderSide.none
           )),
         obscureText: true,
         autocorrect: false,
@@ -104,28 +121,39 @@ class _LoginPageState extends State<LoginPage> {
     ];
   }
 
-  List<Widget> submitWidgets() {
+  List<Widget> submitWidgets(BuildContext context) {
     switch (_formType) {
       case FormType.login:
         return [
+          padded(child: new RaisedButton(
+            textColor: Colors.white,
+            color: Colors.indigo,
+            padding: EdgeInsets.all(15.0),
+            shape: StadiumBorder(
+            ),
+            key: new Key('login'),
+            child: new Text('Login'),
+            onPressed:()=> validateAndSubmit(context)
+          )),
           new FlatButton(
-              key: new Key('login'),
-              child: new Text('Login'),
-              onPressed: validateAndSubmit
-          ),
-          new FlatButton(
+            
               key: new Key('need-account'),
-              child: new Text("Need an account? Register"),
+              child: new Text("Need an account? Register", textAlign: TextAlign.right,),
               onPressed: moveToRegister
           ),
         ];
       case FormType.register:
         return [
-          new FlatButton(
-              key: new Key('register'),
-              child: new Text('Register'),
-              onPressed: validateAndSubmit
-          ),
+          padded(child: new RaisedButton(
+            textColor: Colors.white,
+            color: Colors.indigo,
+            padding: EdgeInsets.all(15.0),
+            shape: StadiumBorder(
+            ),
+            key: new Key('register'),
+            child: new Text('Register'),
+            onPressed:()=> validateAndSubmit(context)
+          )),
           new FlatButton(
               key: new Key('need-login'),
               child: new Text("Have an account? Login"),
@@ -138,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget hintText() {
     return new Container(
-      //height: 80.0,
+        //height: 400.0,
         padding: const EdgeInsets.all(32.0),
         child: new Text(
             _authHint,
@@ -152,39 +180,46 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        resizeToAvoidBottomPadding: false,
         appBar: new AppBar(
           title: new Text(widget.title),
+          backgroundColor: Colors.indigo,
+          elevation: 0.0,
         ),
         backgroundColor: Colors.grey[300],
-        body: new SingleChildScrollView(child: new Container(
-            padding: const EdgeInsets.all(16.0),
-            child: new Column(
-                children: [
-                  new Card(
-                      child: new Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const ListTile(
-                              leading: Icon(Icons.people),
-                              title: const Text("Welcome to LessonTime"),
-                              subtitle: const Text("A new way to take attendance"),
-                            ),
-                            new Container(
-                                padding: const EdgeInsets.all(16.0),
-                                child: new Form(
-                                    key: formKey,
-                                    child: new Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: usernameAndPassword() + submitWidgets(),
-                                    )
-                                )
-                            ),
-                          ])
-                  ),
-                  hintText()
-                ]
+        body: new Stack(
+          children: <Widget>[
+            new Container(
+              decoration: new BoxDecoration(
+                image: new DecorationImage(
+                  image: new AssetImage("lib/Assets/Background.png"), 
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            new SingleChildScrollView(
+              child: new Container(
+                padding: const EdgeInsets.all(16.0),
+                child: new Column(
+                  children: <Widget>[
+                    new Logo(200.0, "lib/Assets/LessonTime.png"),
+                    new Container(
+                      padding: const EdgeInsets.all(16.0),
+                      child: new Form(
+                        key: formKey,
+                        child: new Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: usernameAndPassword() + submitWidgets(context),
+                        )
+                      )
+                    ),
+                    hintText()
+                  ]
+                )
+              )
             )
-        ))
+          ],    
+        )
     );
   }
 
