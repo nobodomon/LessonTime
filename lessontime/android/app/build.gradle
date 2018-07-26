@@ -29,6 +29,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        def mapboxAccessToken = localProperties.getProperty('mapbox.accessToken')
+        buildConfigField "String", "MAPBOX_ACCESS_TOKEN", "$mapboxAccessToken"
         multiDexEnabled true
     }
 
@@ -53,6 +55,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation 'com.google.firebase:firebase-auth:16.0.1'
     implementation 'com.google.firebase:firebase-analytics:16.0.0'
+    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:6.1.0-SNAPSHOT"
 }
 
 apply plugin: 'com.google.gms.google-services'

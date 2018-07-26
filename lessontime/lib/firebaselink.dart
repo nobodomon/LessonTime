@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 
+
 class FirebaseLink{
   final Firestore _fs = Firestore.instance;
   Device device;

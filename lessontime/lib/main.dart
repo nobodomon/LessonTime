@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lessontime/root_page.dart';
 import 'package:lessontime/auth.dart';
+import 'package:mapbox_gl/flutter_mapbox.dart';
 
 final FirebaseApp app = FirebaseApp(
   name: 'LessonTime',
