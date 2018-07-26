@@ -17,6 +17,7 @@ dependencies:
   bubble_tab_indicator:
   random_string:
   http:
+  map_view:
   location:
 
 

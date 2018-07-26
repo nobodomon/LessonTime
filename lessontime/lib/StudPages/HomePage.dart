@@ -86,7 +86,6 @@ class _HomePageState extends State<HomePage>{
     }
   }
 
-
   Widget ipCheck(String ip, BuildContext context){
     FirebaseLink fblink = new FirebaseLink();
     if(fblink.checkIfAcceptableIP(ip, true)){
@@ -108,6 +107,16 @@ class _HomePageState extends State<HomePage>{
     }
   }
 
+  Widget locationCheck(BuildContext context){
+    FirebaseLink fblink = new FirebaseLink();
+    return FutureBuilder(
+      future: fblink.getLocation(),
+      builder:(BuildContext context,AsyncSnapshot<Map<String, double>> snapshot){
+        
+      }
+    );
+  }
+
   Future<Null> displayWarning(BuildContext context) async{
     switch(
       await showDialog(
@@ -121,7 +130,7 @@ class _HomePageState extends State<HomePage>{
               ),
             
           ],
-        )
+        ) 
       )
     ){}
   }
