@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lessontime/FirebaseLink.dart';
+import 'package:lessontime/auth.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +25,7 @@ class _AdminSettingsState extends State<AdminSettings>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement builds
-    
+    Auth auth = new Auth();
     return FutureBuilder(
       future: fblink.getSettings(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
@@ -36,10 +37,28 @@ class _AdminSettingsState extends State<AdminSettings>{
           locationCheckToggle = model.locationCheck;
           return new Scaffold(
             backgroundColor: Colors.white,
+            appBar: new AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              leading:new FlatButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.arrow_downward, color: Colors.indigoAccent,),
+              ),
+              title: new Text("Settings", style: new TextStyle(color:  Colors.indigoAccent)),
+            ),
             body: new Form(
               key:  formKey,
               child: new Column(
                 children: <Widget>[
+                  new ListTile(
+                    leading: new Icon(Icons.lock, color: Colors.indigoAccent,),
+                    title: new Text("Reset Password"),
+                    subtitle: new Text("Send password reset email"),
+                    onTap: ()=> auth.editUser(),
+                  ),
+                  new Divider(),
                   new SwitchListTile(
                     key: new Key("ipCheck"),
                     title: const Text("Check IP Toggle"),

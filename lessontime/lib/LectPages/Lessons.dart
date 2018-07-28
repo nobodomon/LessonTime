@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/FirebaseLink.dart';
+import 'package:lessontime/LectPages/LessonDetails.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'ViewLesson.dart';
@@ -85,8 +88,10 @@ class _LessonsState extends State<Lessons>{
               ),
             new FlatButton( 
                onPressed:((){
-                startClass(user.adminNo);
                 Navigator.pop(context);
+                Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => LessonDetails(user)),
+                );
               }),
              child: new Text("Confirm", style: new TextStyle(color: Colors.red),),
             )
@@ -94,14 +99,5 @@ class _LessonsState extends State<Lessons>{
         )
       )
     ){}
-  }
-
-  void startClass(String lectIC){
-    FirebaseLink _fblink = new FirebaseLink();
-    _fblink.startClass(lectIC).then((String id){
-      Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ViewLesson(id, lectIC)),
-      );
-    });
   }
 }

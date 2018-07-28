@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lessontime/AdminPages/ViewCourse.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/Logo.dart';
 import 'package:lessontime/auth.dart';
@@ -9,15 +10,15 @@ import 'package:lessontime/FirebaseLink.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/LectPages/ViewLesson.dart';
 
-class QRPage extends StatefulWidget {
-  QRPage( this.fbuser, this.user, {Key key, this.title, this.auth,}) : super(key: key);
+class AddCourse extends StatefulWidget {
+  AddCourse( this.fbuser, this.user, {Key key, this.title, this.auth,}) : super(key: key);
 
   final String title;
   final BaseAuth auth;
   final Users user;
   final FirebaseUser fbuser;
   @override
-  _QRPageState createState() => new _QRPageState(user,fbuser);
+  _AddCourseState createState() => new _AddCourseState(user,fbuser);
 }
 
 enum FormType {
@@ -25,13 +26,27 @@ enum FormType {
   register
 }
 
-class _QRPageState extends State<QRPage> {
+class _AddCourseState extends State<AddCourse> {
   static final formKey = new GlobalKey<FormState>();
+  List<String> _schoolList = <String>[
+    "SBM","SCL","SDN","SEG","SHS","SIT","SIDM","GSM","PFP"
+  ];
   Users user;
   FirebaseUser fbuser;
-  String _lessonID;
+  String _school;
+  String _courseID;
+  String _courseName;
   String _authHint = '';
-  _QRPageState(this.user, this.fbuser);
+  _AddCourseState(this.user, this.fbuser);
+  TextEditingController courseNameCtrl = new TextEditingController();
+
+
+  @override
+  void dispose() {
+    // Clean up the controller when the Widget is removed from the Widget tree
+    courseNameCtrl.dispose();
+    super.dispose();
+  }
 
   bool validateAndSave() {
     final form = formKey.currentState;
@@ -43,19 +58,25 @@ class _QRPageState extends State<QRPage> {
   }
 
   void validateAndView(BuildContext context) async{
+    setState(() {
+      courseNameCtrl.text = "prevent check only";      
+    });
     if(validateAndSave()){
       try{
         FirebaseLink fbLink = new FirebaseLink();
-        await fbLink.checkifClassExist(_lessonID).then((bool result){
+        await fbLink.checkIfCourseExist(_school,_courseID).then((bool result){
           if(result == true){
-              _authHint = 'Lesson $_lessonID found, opening viewer.';
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(_lessonID,user.adminNo)));
+              _authHint = 'Course $_courseID found, opening viewer.';
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewCourse(_school,_courseID)));
           }else{
-              _authHint = 'Lesson $_lessonID not found!';
+              _authHint = 'Course $_courseID not found!';
           }
           final form = formKey.currentState;
           setState(() {
               form.reset();
+              setState(() {
+              courseNameCtrl.text = "";                
+              });
               SnackBar bar = new SnackBar(content:new Text(_authHint),);
               Scaffold.of(context).showSnackBar(bar);
           });
@@ -63,20 +84,26 @@ class _QRPageState extends State<QRPage> {
       }catch(error){
         print(error.toString());
       }
+    }else{
+      setState(() {
+        _authHint = ' ';
+      });
     }
+    
   }
 
   Future<Null> confirmJoin(BuildContext ct) async{
+    
     validateAndSave();
     switch(
       await showDialog(
         context: context,
         child: new SimpleDialog(
-          title: new Text("Confirm to join $_lessonID?"),
+          title: new Text("Confirm to create $_courseID?"),
           children: <Widget>[
             new Padding(
               padding: new EdgeInsets.all(25.0),
-              child: new Text("You will be added to this lesson."),
+              child: new Text("This course will be created. You may add modules later."),
               ),
             new FlatButton( 
                onPressed:((){
@@ -96,22 +123,24 @@ class _QRPageState extends State<QRPage> {
       try {
         FirebaseLink fbLink = new FirebaseLink();
         try {
-          await fbLink.joinClass(user, _lessonID).then((JoinClassResult result){
-            print("QRPage result: " + result.toString());
-            if(result.success == false){
-              _authHint = result.error;
-            }else if(result.success == true){
-              _authHint = result.error;
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewLesson(_lessonID,user.adminNo)));
+          await fbLink.createCourse(_school,_courseID, _courseName).then((CourseCreationResult ccr){
+            if(ccr.success){
+              _authHint = ccr.error;
+              final form = formKey.currentState;
+              setState(() {
+                form.reset();
+                SnackBar bar = new SnackBar(content:new Text(_authHint),);
+                Scaffold.of(context).showSnackBar(bar);
+              });
             }else{
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Assets.loader()));
+              _authHint = ccr.error;
+              final form = formKey.currentState;
+              setState(() {
+                form.reset();
+                SnackBar bar = new SnackBar(content:new Text(_authHint),);
+                Scaffold.of(context).showSnackBar(bar);
+              });
             }
-            final form = formKey.currentState;
-            setState(() {
-              form.reset();
-              SnackBar bar = new SnackBar(content:new Text(_authHint),);
-              Scaffold.of(context).showSnackBar(bar);
-            });
           });
         }catch(error){
           print(error);
@@ -130,19 +159,20 @@ class _QRPageState extends State<QRPage> {
     }
   }
 
-  Widget classIDField() {
+  Widget courseIDField() {
     Color select = Colors.indigo[400];
     return padded(child: new TextFormField(
-        key: new Key('LessonID'),
+        style: new TextStyle(color: Colors.white),
+        key: new Key('CourseID'),
         decoration: new InputDecoration(
           isDense: true,
-          hintText: "    Lesson ID",
+          hintText: "Course ID",
           hintStyle: new TextStyle(
             color: Colors.white
           ),
           prefixIcon: new Padding(
             padding: EdgeInsets.only(right: 15.0),
-            child: Icon(Icons.group_add),
+            child: Icon(Icons.chevron_right, color: Colors.white),
           ),
           fillColor: select,
           filled: true,
@@ -152,8 +182,77 @@ class _QRPageState extends State<QRPage> {
           )
         ),
         autocorrect: false,
-        validator: (val) => val.isEmpty ? 'Code can\'t be empty.' : null,
-        onSaved: (val) => _lessonID = val,
+        validator: (val) => val.isEmpty ? 'Course ID can\'t be empty.' : null,
+        onSaved: (val) => _courseID = val,
+      )
+    );
+  }
+
+  Widget schoolField() {
+    Color select = Colors.indigo[400];
+    return padded(
+      child: new TextFormField(
+        style: new TextStyle(color: Colors.white),
+        key: new Key('School'),
+        decoration: new InputDecoration(
+          isDense: true,
+          helperText: "SBM,SEG,SDN,SIDM...",
+          hintText: "School",
+          hintStyle: new TextStyle(
+            color: Colors.white
+          ),
+          prefixIcon: new Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Icon(Icons.school, color: Colors.white),
+          ),
+          fillColor: select,
+          filled: true,
+          border: new OutlineInputBorder(
+            borderSide: BorderSide(color: select, width: 2.0, style: BorderStyle.solid),
+            borderRadius: new BorderRadius.circular(50.0),
+          )
+        ),
+        autocorrect: false,
+        validator: (val){
+          val.isEmpty ? 'School can\'t be empty.' : null;
+          if(_schoolList.contains(val)){
+            return null;
+          }else{
+            return "Invalid school input.";
+          }
+        },
+        onSaved: (val) => _school = val.toUpperCase(),
+      )
+    );
+  }
+
+  Widget courseNameField() {
+    
+    Color select = Colors.indigo[400];
+    return padded(child: new TextFormField(
+        controller: courseNameCtrl,
+        style: new TextStyle(color: Colors.white),
+        key: new Key('CourseName'),
+        decoration: new InputDecoration(
+          isDense: true,
+          hintText: "Course Name",
+          hintStyle: new TextStyle(
+            color: Colors.white
+          ),
+          prefixIcon: new Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Icon(Icons.label, color: Colors.white),
+          ),
+          fillColor: select,
+          filled: true,
+          border: new OutlineInputBorder(
+            borderSide: BorderSide(color: select, width: 2.0, style: BorderStyle.solid),
+            borderRadius: new BorderRadius.circular(50.0),
+          )
+        ),
+        autocorrect: false,
+        validator: (val) => val.isEmpty ? 'Course Name can\'t be empty.' : null,
+        onSaved: (val) => _courseName = val,
       )
     );
   }
@@ -179,8 +278,8 @@ class _QRPageState extends State<QRPage> {
           padding: EdgeInsets.all(15.0),
           shape: StadiumBorder(
           ),
-          key: new Key('register'),
-          child: new Text('Join'),
+          key: new Key('create'),
+          child: new Text('Create'),
           onPressed:()=> confirmJoin(context)
         )
       ),
@@ -205,7 +304,8 @@ class _QRPageState extends State<QRPage> {
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.indigo,
-      body :new Center(
+      body : new SingleChildScrollView(
+        child: Center(
         child: new Card(
           margin: EdgeInsets.all(50.0),
           color: Colors.white,
@@ -213,9 +313,9 @@ class _QRPageState extends State<QRPage> {
           child: new Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Logo(150.0,"lib/Assets/JoinClass.png"),
+                Logo(150.0,"lib/Assets/AddCourses.png"),
                 new Center(
-                  child: new Text("Join a class", style: TextStyle(fontWeight: FontWeight.w900),),
+                  child: new Text("Create a course", style: TextStyle(fontWeight: FontWeight.w900),),
                 ),
                 new Container(
                   padding: const EdgeInsets.all(16.0),
@@ -224,7 +324,9 @@ class _QRPageState extends State<QRPage> {
                       child: new Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          classIDField(), 
+                          schoolField(),
+                          courseIDField(),
+                          courseNameField(), 
                           new Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             mainAxisSize: MainAxisSize.max,
@@ -239,7 +341,8 @@ class _QRPageState extends State<QRPage> {
               ]
           )
         ),
-      )
+      ),
+      ) 
     );
   }
 

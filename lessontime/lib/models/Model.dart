@@ -93,10 +93,12 @@ class Lesson{
   String lectInCharge;
   bool isOpen;
   String ipAddr;
-  
+  String school;
+  String courseID;
+  String moduleName;
 
 
-  Lesson(this.lectInCharge){
+  Lesson(this.lectInCharge,this.school,this.courseID,this.moduleName){
     this.isOpen = true;
     String rand = randomAlphaNumeric(6).toUpperCase();
     bool dupe;
@@ -118,7 +120,10 @@ class Lesson{
       "lessonID" : lessonID,
       "lectInCharge": lectInCharge,
       "isOpen": isOpen,
-      "ipAddr": ipAddr
+      "ipAddr": ipAddr,
+      "moduleName": moduleName,
+      "courseID": courseID,
+      "school": school,
     };
   }
 
@@ -127,6 +132,9 @@ class Lesson{
     lectInCharge = data["lectInCharge"];
     isOpen = data["isOpen"];
     ipAddr = data["ipAddr"];
+    moduleName = data["moduleName"];
+    courseID = data["courseID"];
+    school = data["school"];
   }
 
   Lesson.fromSnapshot(DocumentSnapshot snapshot){
@@ -135,6 +143,9 @@ class Lesson{
     this.isOpen = snapshot["isOpen"];
     this.ipAddr = snapshot["ipAddr"];
     this.key = snapshot.documentID;
+    this.moduleName = snapshot["moduleName"];
+    this.courseID = snapshot["courseID"];
+    this.school = snapshot["school"];
   }
 
   Future<String> getIP() async{
@@ -156,6 +167,12 @@ class LocationResult{
   bool success;
   String error;
   LocationResult(this.success,this.error);
+}
+
+class AddClassModel{
+  bool success;
+  String lessonID;
+  AddClassModel(this.success, this.lessonID);
 }
 
 class SettingsModel{
@@ -181,5 +198,51 @@ class SettingsModel{
     this.ipCheck = snapshot.data["ipCheck"];
     this.locationCheck = snapshot.data["locationCheck"];
     this.settingsLastSetBy = snapshot.data["settingsLasetSetBy"];
+  }
+}
+
+class CourseCreationResult{
+  bool success;
+  String error;
+  CourseCreationResult(this.success,this.error);
+}
+
+
+
+class Course{
+  String courseName;
+
+  Course(this.courseName);
+  toJson(){
+    return{
+      "courseName" : courseName,
+    };
+  }
+
+  Course.fromJson(Map data){
+    courseName = data["courseName"];
+  }
+
+  Course.fromSnapshot(AsyncSnapshot snapshot){
+    this.courseName = snapshot.data["courseName"];
+  }
+}
+
+class Module{
+  String moduleName;
+
+  Module(this.moduleName);
+  toJson(){
+    return{
+      "moduleName" : moduleName,
+    };
+  }
+
+  Module.fromJson(Map data){
+    moduleName = data["moduleName"];
+  }
+
+  Module.fromSnapshot(AsyncSnapshot snapshot){
+    this.moduleName = snapshot.data["moduleName"];
   }
 }

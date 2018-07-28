@@ -79,15 +79,18 @@ class _LoginPageState extends State<LoginPage> {
     return [
       padded(child: new TextFormField(
         key: new Key('email'),
-        
+        style: TextStyle(color: Colors.white),
         decoration: new InputDecoration(
           isDense: true,
           filled: true,
           fillColor: Color.fromRGBO(63,81,181 , 70.0),
-          prefixIcon: Icon(Icons.person,color: Colors.white),
-          hintText: "    Admin Number",
+          prefixIcon: new Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Icon(Icons.person,color: Colors.white,),
+          ),
+          hintText: "Admin Number",
           hintStyle: TextStyle(
-            color: Colors.white
+            color: Colors.white30
           ),
           border: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(50.0),
@@ -98,15 +101,19 @@ class _LoginPageState extends State<LoginPage> {
         onSaved: (val) => _email = val+"@mymail.nyp.edu.sg",
       )),
       padded(child: new TextFormField(
+        style: TextStyle(color: Colors.white),
         key: new Key('password'),
         decoration: new InputDecoration(
           isDense: true,
           filled: true,
           fillColor: Color.fromRGBO(63,81,181 , 70.0),
-          prefixIcon: Icon(Icons.lock,color: Colors.white),
-          hintText: "    Password",
+          prefixIcon: new Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Icon(Icons.lock,color: Colors.white,),
+          ),
+          hintText: "Password",
           hintStyle: TextStyle(
-            color: Colors.white
+            color: Colors.white30
           ),
           border: new OutlineInputBorder(
             borderRadius: new BorderRadius.circular(50.0),

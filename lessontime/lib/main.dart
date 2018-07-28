@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:lessontime/root_page.dart';
 import 'package:lessontime/auth.dart';
 import 'package:mapbox_gl/flutter_mapbox.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseApp app = FirebaseApp(
   name: 'LessonTime',
@@ -23,6 +24,7 @@ class LessonTime extends StatelessWidget {
       apiKey: 'AIzaSyDqKqv_GgOohKy7u1PhEKj83demcXuFDr8',
       databaseURL: "https://lessontime-b3a25.firebaseio.com",
     ));
+    
     return new MaterialApp(
         title: 'Lesson Time',
         theme: new ThemeData(

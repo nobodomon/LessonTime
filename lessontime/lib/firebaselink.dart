@@ -19,6 +19,14 @@ class FirebaseLink{
     return _fs.collection("Users").document(trimmed.toUpperCase()).get();
   }
 
+  
+  Future<DocumentSnapshot> getUserOnceFsNoTrim(String email) async{
+    String touppercase = email.toUpperCase();
+    print(touppercase + " is the search string");
+    return _fs.collection("Users").document(touppercase.toUpperCase()).get();
+  }
+
+
   Future<Stream<DocumentSnapshot>> getUserStreamFs(String email) async{
       String trimmed = email.substring(0,email.length-18).toUpperCase();
     return _fs.collection("Users").document(trimmed).snapshots();
@@ -69,14 +77,26 @@ class FirebaseLink{
   return new Device(deviceName, identifier);
   }
 
-  Future<String> startClass(String lectIC) async{
-    Lesson lesson = new Lesson(lectIC);
-    return await getIP().then((string){
-      lesson.ipAddr = string;
-      Firestore.instance.collection("Lessons").add(lesson.toJson());
-      return lesson.lessonID;
+  Future<AddClassModel> startClass(String lectIC,String school, String courseID, String module) async{
+    Lesson lesson = new Lesson(lectIC,school,courseID,module);
+    return await checkIfModuleExists(school, courseID, module).then((bool res){
+      if(res){
+        return getIP().then((string){
+        lesson.ipAddr = string;
+        Firestore.instance.collection("Lessons").add(lesson.toJson());
+        return new AddClassModel(true, lesson.lessonID);
+        });
+      }else{
+        return new AddClassModel(false, "Module does not exist");
+      }
+      
     });
+    
+    
   }
+
+  
+
   void resumeClass(String key) async{
     key = key.toUpperCase();
     Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
@@ -96,6 +116,14 @@ class FirebaseLink{
         return false;
       }
       Firestore.instance.collection("Lessons").document(docID).setData({'isOpen' : false},merge:  true);
+      return true;
+    });
+  }
+
+  Future<bool> deleteClass(String key) async{
+    key = key.toUpperCase();
+    return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo: key).getDocuments().then((QuerySnapshot snapshot){
+      snapshot.documents.first.reference.delete();
       return true;
     });
   }
@@ -191,6 +219,38 @@ class FirebaseLink{
     }
   }
 
+  Future<JoinClassResult> addStudentToClassManually(String adminNo, String key)async{
+    key = key.toUpperCase();
+    try{
+      return await getUserOnceFsNoTrim(adminNo).then((DocumentSnapshot snapshot){
+        if(snapshot.exists){
+          return checkIfInClass(key, adminNo).then((bool isInClass){
+            if(isInClass == false){
+              return Firestore.instance.collection("Lessons").where("lessonID", isEqualTo:  key).getDocuments().then((QuerySnapshot classes){
+                if(classes.documents.length > 0){
+                  String docID = classes.documents.first.documentID;
+                  print(docID);
+                  return Firestore.instance.collection("Lessons").document(docID).collection("Students").add(Users.fromSnapshot(snapshot).toJson()).then((DocumentReference ref){
+                    return new JoinClassResult(true, "Student successfully added");
+                  });
+                }else{
+                  return new JoinClassResult(false, "Class not found.");
+                }
+              });
+            }else{
+              return new JoinClassResult(false, "This student is already in this class!");
+            }
+          });
+        }else{
+          return new JoinClassResult(false, "This Student does not exist!");
+        }
+      });
+    }catch(error){
+      print(error.toString());
+      return new JoinClassResult(false, error.toString());
+    }
+  }
+
   Future<JoinClassResult> joinClass(Users user, String key) async{
     key = key.toUpperCase();
     bool existQuery;
@@ -271,6 +331,79 @@ class FirebaseLink{
       return snapshot.documents.first.reference.collection("Students").snapshots();
     });
 
+  }
+
+  
+  Future<CourseCreationResult> createCourse(String school, String courseID, String courseName)async{
+    try{
+      Course toAdd = new Course(courseName);
+      return await checkIfCourseExist(school, courseID).then((bool res){
+        if(res){
+          return new CourseCreationResult(false, "A course with that ID already exists!");
+        }else{
+          return  Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).setData(toAdd.toJson()).
+          then((_){
+            return new CourseCreationResult(true, "Course successfully created.");
+          });
+        }
+      });
+    }catch(error){
+      print(error.toString());
+    }
+  }
+  
+  Future<QuerySnapshot> getAllCourses(String school) async{
+    return await Firestore.instance.collection("School").document(school).collection("Courses").getDocuments();
+  }
+
+  Future<CourseCreationResult> addModules(String school, String courseID, String moduleName)async{
+    try{
+      Module toAdd = new Module(moduleName);
+      return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Modules").document(toAdd.moduleName).setData(toAdd.toJson()).then((_){
+        return new CourseCreationResult(true, "Module added");
+
+      });
+    }catch(error){
+      return new CourseCreationResult(false, error.toString());
+    }
+  }
+
+  Future<CourseCreationResult> removeModules(String school, String courseID, String moduleName)async{
+    try{
+      return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Modules").document(moduleName).delete().then((_){
+        return new CourseCreationResult(true, "Module Successfully deleted");
+      });
+    }catch(error){
+      return new CourseCreationResult(false, error.toString());
+    }
+  }
+
+  Future<DocumentSnapshot> getCourse(String school, String courseID) async{
+    return Firestore.instance.collection("School").document(school).collection("courses").document(courseID).get();
+  }
+
+  Future<QuerySnapshot> getCourseModules(String school, String courseID) async{
+    return Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Modules").getDocuments();
+  }
+
+  Future<bool> checkIfCourseExist(String school, String courseID) async{
+    return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).get().then((DocumentSnapshot ss){
+      if(ss.exists){
+        return true;
+      }else{
+        return false;
+      }
+    });
+  }
+
+  Future<bool> checkIfModuleExists(String school, String courseID, String moduleID)async{
+    return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Modules").document(moduleID).get().then((DocumentSnapshot sc){
+      if(sc.exists){
+        return true;
+      }else{
+        return false;
+      }
+    });
   }
 
   /* Future<QuerySnapshot> getClassListOfUser(String adminNo) async{

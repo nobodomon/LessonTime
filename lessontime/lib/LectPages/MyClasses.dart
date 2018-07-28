@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
+import 'package:lessontime/FirebaseLink.dart';
 import 'package:lessontime/Logo.dart';
 import 'ViewLesson.dart';
 class MyClasses extends StatefulWidget{
@@ -13,6 +14,7 @@ class MyClasses extends StatefulWidget{
 
 class _MyClassesState extends State<MyClasses>{
   String lectIC;
+  FirebaseLink fblink = new FirebaseLink();
   _MyClassesState(this.lectIC);
   @override
   Widget build(BuildContext context) {
@@ -33,11 +35,22 @@ class _MyClassesState extends State<MyClasses>{
                   return ListTile(
                     title: new Text("Class ID: " + document["lessonID"].toString()),
                     subtitle: new Text("Is this class open? " + document["isOpen"].toString()),
+                    trailing: new IconButton(
+                      icon:Icon(Icons.delete),
+                      onPressed: (){
+                        fblink.deleteClass(document["lessonID"]);
+                        Scaffold.of(context).showSnackBar(
+                          new SnackBar(
+                            content: new Text("Class successfully deleted."),
+                            )
+                          );
+                      }),
                     onTap: (){Navigator.push(
                       context, 
                       MaterialPageRoute(
                         builder:(context) => ViewLesson(document["lessonID"],lectIC)));
                     });
+                    
                 }).toList()
           ) 
           );

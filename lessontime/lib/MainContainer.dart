@@ -15,6 +15,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lessontime/AdminPages/AddUser.dart';
 import 'package:lessontime/AdminPages/HomePanel.dart';
 import 'package:lessontime/AdminPages/AdminSettings.dart';
+import 'package:lessontime/AdminPages/AddCourse.dart';
 
 class MainContainer extends StatefulWidget {
   MainContainer({this.auth, this.onSignOut});
@@ -70,9 +71,32 @@ class _MainContainerState extends State<MainContainer>
             ///load until snapshot.hasData resolves to true
           });
     }
+  }
 
-
-  
+  AppBar adminAppBar(){
+    return new AppBar(
+      title: new Text("LessonTime"),
+      elevation: 0.0,
+      actions: <Widget>[
+        new IconButton(
+          onPressed: (){
+            Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AdminSettings(fbUser)),
+            );
+          },
+          icon: new Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+        ),
+        new IconButton(
+            onPressed: _signOut,
+            icon: new Icon(
+              Icons.clear,
+              color: Colors.white,
+        )) 
+      ],
+    );
   }
 
   AppBar appBar(){
@@ -189,12 +213,12 @@ class _MainContainerState extends State<MainContainer>
 
   Scaffold adminNav(){
     return new Scaffold(
-      appBar: appBar(),
+      appBar: adminAppBar(),
       body: new TabBarView(
         children: <Widget>[
           new AddUser(),
           new HomePanel(fbUser),
-          new AdminSettings(fbUser),
+          new AddCourse(fbUser,cUser),
         ],
         controller: tabController,
       ),

@@ -16,10 +16,14 @@ class ViewLesson extends StatefulWidget{
 }
 
 class _ViewLessonState extends State<ViewLesson>{
+  static final formKey = new GlobalKey<FormState>();
   String lessonID;
   String ipAddr;
   String lectIC;
   String isOpen;
+  String moduleName;
+  String _adminNo;
+  String _authHint = '';
   _ViewLessonState(this.lessonID, this.lectIC);
   FirebaseLink fblink = new FirebaseLink();
   @override
@@ -38,12 +42,18 @@ class _ViewLessonState extends State<ViewLesson>{
               }else{
                 ipAddr = qc.data.documents.first["ipAddr"];
                 isOpen = qc.data.documents.first["isOpen"].toString();
+                moduleName = qc.data.documents.first["moduleName"];
                 return new Scaffold(
                   backgroundColor: Colors.white,
                   appBar: new AppBar(
                     backgroundColor: Colors.transparent,
-                    title: new Text("#$lessonID"  ,
-                      style: new TextStyle(color: Colors.indigoAccent)),
+                    title: new FlatButton(
+                      child: new Text(
+                        "#$lessonID"  ,
+                        style: new TextStyle(color: Colors.indigoAccent)
+                        ),
+                        onPressed: ()=>showInfo(),
+                    ),
                     leading:new FlatButton(
                       onPressed: (){
                         Navigator.pop(context);
@@ -53,10 +63,7 @@ class _ViewLessonState extends State<ViewLesson>{
                     elevation: 0.0,
                     actions: <Widget>[
                       stopButton(context),
-                      new IconButton(
-                        icon: Icon(Icons.info),
-                        onPressed: ()=> showInfo(),
-                      ),
+                      addButton(context),
                       new IconButton(
                         icon: Icon(Icons.refresh),
                         onPressed: ()=> setState(() {
@@ -69,6 +76,7 @@ class _ViewLessonState extends State<ViewLesson>{
                     children: snapshot.data.documents.map((DocumentSnapshot document){
                       return ListTile(
                         title: new Text(document["adminNo"]),
+                        leading: new Icon(Icons.people),
                       );
                     }).toList()
                   ),
@@ -81,6 +89,181 @@ class _ViewLessonState extends State<ViewLesson>{
     );
   }
 
+  Widget addButton(BuildContext scaffoldCt){
+    return FutureBuilder(
+      future: fblink.getClass(lessonID),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+        if(!snapshot.hasData){
+          return Assets.loader();
+        }else{
+          if(snapshot.data.documents.first["isOpen"]){
+            return new IconButton(
+              icon: Icon(Icons.person_add),
+              tooltip: "Manually add a student",
+              onPressed: ()=>addUserDialog(scaffoldCt),
+            );
+          }else{
+            return new IconButton(
+              icon: Icon(Icons.person_add),
+              tooltip: "Manually add a student",
+            );
+          }
+        }
+      });
+  }
+
+  Future<Null> addUserDialog(BuildContext scaffoldCt) async{
+    Color select = Colors.indigo[400];
+    switch(
+      await showDialog(
+        context: context,
+        child: SimpleDialog(
+          contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+          title: new Text("Add student to class"),
+          children: <Widget>[
+            new Form(
+              key:  formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  adminNoField(),
+                  padded(
+                    child: new RaisedButton(
+                      textColor: Colors.white,
+                      color: select,
+                      padding: EdgeInsets.all(15.0),
+                      shape: StadiumBorder(
+                      ),
+                      key: new Key('Add'),
+                      child: new Text('Add'),
+                      onPressed:()=> confirmAdd(scaffoldCt,context)
+                    )
+                  ),
+                ],
+              ),
+            )
+
+          ],
+        )
+      )
+    ){}
+  }
+
+  Future<Null> confirmAdd(BuildContext scaffoldCt, BuildContext ct) async{
+    if(validateAndSave()){
+      switch(
+      await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: new Text("Confirm to add $_adminNo?"),
+          children: <Widget>[
+            new Padding(
+              padding: new EdgeInsets.all(25.0),
+              child: new Text("This student will be manually added."),
+              ),
+            new FlatButton( 
+               onPressed:((){
+                validateAndSubmit(ct);
+                Navigator.pop(ct);
+                Navigator.pop(context);
+                setState(() {
+                  SnackBar snackBar = new SnackBar(content:new Text(_authHint),);
+                  Scaffold.of(scaffoldCt).showSnackBar(snackBar);     
+                });
+              }),
+             child: new Text("Confirm", style: new TextStyle(color: Colors.green),),
+            )
+          ],
+        )
+      )
+    ){}
+    }
+    
+  }
+
+  bool validateAndSave() {
+    final form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+  }
+
+  void validateAndSubmit(BuildContext context) async {
+    if (validateAndSave()) {
+      try {
+        FirebaseLink fbLink = new FirebaseLink();
+        try {
+          await fbLink.addStudentToClassManually(_adminNo, lessonID).then((JoinClassResult jcr){
+            print(jcr.error);
+            if(jcr.success){
+              _authHint = jcr.error;
+              setState(() {
+                _authHint = jcr.error;
+                _adminNo = "";
+              });
+            }else{
+              setState(() {
+                _authHint = jcr.error;
+              });
+            }
+          });
+          
+        }catch(error){
+          print(error.toString());
+        }
+        
+      }catch (e) {
+        setState(() {
+          _authHint = 'Creation Error\n\n${e.toString()}';
+        });
+        print(e);
+      }
+    } else {
+      setState(() {
+        _authHint = '';
+      });
+    }
+  }
+
+  Widget adminNoField() {
+    Color select = Colors.indigo[400];
+    return padded(child: new TextFormField(
+        style: new TextStyle(color: Colors.white),
+        key: new Key('AdminNumber'),
+        decoration: new InputDecoration(
+          isDense: true,
+          hintText: "Admin Number",
+          hintStyle: new TextStyle(
+            color: Colors.white
+          ),
+          prefixIcon: new Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Icon(Icons.label),
+          ),
+          fillColor: select,
+          filled: true,
+          border: new OutlineInputBorder(
+            borderSide: BorderSide(color: select, width: 2.0, style: BorderStyle.solid),
+            borderRadius: new BorderRadius.circular(50.0),
+          )
+        ),
+        autocorrect: false,
+        validator: (val) => val.isEmpty ? 'Admin Number can\'t be empty.' : null,
+        onSaved: (val) => _adminNo = val,
+      )
+    );
+  }
+
+  Widget padded({Widget child}) {
+    return new Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: child,
+    );
+  }
+
+
   Future<Null> showInfo() async{
     switch(
       await showDialog(
@@ -89,16 +272,25 @@ class _ViewLessonState extends State<ViewLesson>{
           title: new Text("Class Information"),
           children: <Widget>[
             new ListTile(
-              leading: new Icon(Icons.class_, color: Colors.indigoAccent,),
+              dense: true,
+              leading: new Icon(Icons.book, color: Colors.indigoAccent,),
               title: const Text("Class ID"),
               subtitle: new Text("$lessonID")
             ),
             new ListTile(
+              dense: true,
+              leading: new Icon(Icons.class_, color: Colors.indigoAccent,),
+              title:  const Text("Module Name"),
+              subtitle: new Text(moduleName.toString()),
+            ),
+            new ListTile(
+              dense: true,
               leading: new Icon(Icons.network_cell, color: Colors.indigoAccent,),
               title:  const Text("Class IP address"),
               subtitle: new Text("$ipAddr"),
             ),
             new ListTile(
+              dense: true,
               leading: new Icon(Icons.lock, color: Colors.indigoAccent,),
               title:  const Text("Class is open?"),
               subtitle: new Text(isOpen.toString()),

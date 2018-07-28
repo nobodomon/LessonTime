@@ -7,10 +7,12 @@ import 'package:lessontime/Logo.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/FirebaseLink.dart';
-import 'package:mapbox_gl/controller.dart';
+/* import 'package:mapbox_gl/controller.dart';
 import 'package:mapbox_gl/overlay.dart';
-import 'package:mapbox_gl/flutter_mapbox.dart';
+import 'package:mapbox_gl/flutter_mapbox.dart'; */
 import 'package:flutter/services.dart';
+import 'package:map_view/map_view.dart';
+
 
 class HomePage extends StatefulWidget{
   HomePage(this.fbUser);
@@ -22,14 +24,18 @@ class HomePage extends StatefulWidget{
 
 class _HomePageState extends State<HomePage>{
   _HomePageState(this.fbuser);
+  final String apiKey = 'AIzaSyCDB6x7-YkbRBcfw6xfmLtKaEBc5GTVrpI';
   FirebaseUser fbuser;
   Users nUser;
+  MapView mapView = new MapView();
   //final BaseAuth _auth;
+  
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    MapView.setApiKey(apiKey);
     //getUser();
   }
   @override
@@ -72,7 +78,7 @@ class _HomePageState extends State<HomePage>{
         }
       });
     }
-  }
+  
 
   Widget pwWarningGen(Users nUser){
     if(nUser.lastLogin == null){
@@ -94,6 +100,9 @@ class _HomePageState extends State<HomePage>{
         leading: new Icon(Icons.network_check, color: Colors.indigoAccent,),
         title: const Text("Your logged in IP"),
         subtitle: Text(ip),
+        onLongPress: ()=>setState(() {
+                        
+        }),
       );
     }else{
       return new ListTile(
@@ -104,72 +113,51 @@ class _HomePageState extends State<HomePage>{
           icon: Icon(Icons.warning),
           onPressed: ()=> displayWarning(context,"Are you sure you are on the school's network?", "We suggest that you connect to school's wifi and try logging in again to be able to join your class."),
         ),
+        onLongPress: ()=>setState(() {
+          fblink.setLogonIP(nUser.email);
+        }),
       );
     }
   }
 
-  Future<bool> setSettings(MapboxOverlayController controller, String style) async{
-    try{
-      return await controller.setMaxZoom(15.0).then((Null x){
-        return controller.setMinZoom(15.0).then((Null y){
-          return controller.setStyleJson(style).then((Null z){
-            return true;
-          });
-        });
-      }); 
-      /* 
-      await controller.setMaxZoom(15.0);
-      await controller.setMinZoom(15.0);
-      await controller.setStyleJson(style);
-      return true; */
-    }catch(error){
-      return false;
-    }
-  }
-  
-  void buildMap(String style, AsyncSnapshot<Map<String, double>> location, MapboxOverlayController controller){
-    double zoom = 15.0;
-    double bearing = 180.0;
-    double tilt = 60.0;
+  Future<Null> openMap(BuildContext context, AsyncSnapshot<Map<String, double>> location)async{
     
-    controller.flyTo(
-      new CameraPosition(
-        target: new LatLng(lat: location.data.values.toList()[1],lng: location.data.values.toList()[5]),
-        zoom: zoom,
-        bearing: bearing,
-        tilt: tilt,
-      ), 5000);
-  }
-
-  Future<Null> openMap(BuildContext context, MapboxOverlayController controller,String style, AsyncSnapshot<Map<String, double>> location)async{
-    
-    double zoom = 15.0;
-    double bearing = 180.0;
-    double tilt = 60.0;
+    double latitude = location.data.values.toList()[1];
+    String lat = latitude.toStringAsFixed(3);
+    latitude = double.parse(lat);
+    double longtitude = location.data.values.toList()[5];
+    String long = longtitude.toStringAsFixed(3);
+    longtitude = double.parse(long);
+    List<Marker> _markers = <Marker>[
+    new Marker(
+      "1",
+      "Something fragile!",
+      latitude,
+      longtitude,
+      color: Colors.indigoAccent,
+      draggable: false, //Allows the user to move the marker.
+      
+    ),
+    ];
+    Location mapLoc = new Location(latitude, longtitude);
+    var staticMapProvider = new StaticMapProvider(apiKey);
+    var uri = staticMapProvider.getStaticUriWithMarkers(_markers,width:450,height: 300, center: mapLoc,maptype: StaticMapViewType.terrain);
+    MapView.setApiKey(apiKey);
     switch(
       showDialog(
         context: context,
         child: new SimpleDialog(
-          title: new Text("Your approximate location"),
+          title: new Text("Your approximate location",textAlign: TextAlign.center,),
+          contentPadding: EdgeInsets.all(0.0),
           children: <Widget>[
             new Padding(
               padding: new EdgeInsets.all(15.0),
               child: new Container(
-                height: 250.0,
-                width: 250.0,
+                height: 200.0,
+                width: 300.0,
                 color: Colors.white,
-                child: new MapboxOverlay(
-                  controller: controller,
-                  options: new MapboxMapOptions(
-                    style: "mapbox://styles/nobodomon/cjk2tleeh327x2ssbz9p5ezsq",
-                    camera: new CameraPosition(
-                      target: new LatLng(lat: location.data.values.toList()[1],lng: location.data.values.toList()[5]),
-                      //target: new LatLng(lat: 0.0, lng: 0.0),
-                      zoom: zoom,
-                      bearing: bearing,
-                      tilt: tilt
-                    )
-                  ),
+                child: new Center(
+                  child: new Image.network(uri.toString()),
                 )
                ),
             ),
@@ -180,9 +168,8 @@ class _HomePageState extends State<HomePage>{
     
   }
 
-
+  
   Widget locationCheck(BuildContext context){
-    MapboxOverlayController controller = new MapboxOverlayController();
     FirebaseLink fblink = new FirebaseLink();
     return FutureBuilder(
       future: fblink.getLocation(),
@@ -193,53 +180,47 @@ class _HomePageState extends State<HomePage>{
           );
         }else{
           LocationResult res = fblink.checkIfAcceptableLocationRange(location.data, true);
-          return FutureBuilder( 
-            future: loadAsset(),
-            builder: (BuildContext ct, AsyncSnapshot<String> asset){
-              if(!asset.hasData){
-                return new ListTile(
-                  title: new LinearProgressIndicator(),
-                );
-              }else{
-                double latitude = location.data.values.toList()[1];
-                String lat = latitude.toStringAsFixed(3);
-                double longtitude = location.data.values.toList()[5];
-                String long = longtitude.toStringAsFixed(3);
-                if(res.success){
-                  return new ListTile(
-                    leading: Icon(Icons.location_on),
-                    title: new Text("Your current location "),
-                    subtitle: new Text("Latitude: $lat," + " Longtitude: $long"),
-                    onTap: (){
-                      openMap(context, controller,asset.data, location);
-                    },
-                  );
-                }else{
-                  return new ListTile(
-                    leading: Icon(Icons.location_on,color: Colors.indigoAccent,),
-                    title: new Text("Your location"),
-                    subtitle: new Text("Latitude: $lat," + " Longtitude: $long", style: TextStyle(color: Colors.red),),
-                    onTap: (){
-                            openMap(context, controller,asset.data, location);
-                        //buildMap(asset.data, location, controller);
-                    },
-                    trailing: new IconButton(
-                      icon: Icon(Icons.warning),
-                      onPressed: () => displayWarning(context,"Your location seems shady", "Are you sure you are in school?")
-                    ),
-                  );
-                }
-              }
-            }
-          );
+          double latitude = location.data.values.toList()[1];
+          String lat = latitude.toStringAsFixed(3);
+          double longtitude = location.data.values.toList()[5];
+          String long = longtitude.toStringAsFixed(3);
+          if(res.success){
+            return new ListTile(
+              leading: Icon(Icons.location_on,color: Colors.indigoAccent),
+              title: new Text("Your location "),
+              subtitle: new Text(res.error),
+              onTap: (){
+                openMap(context,location);
+              },
+              onLongPress: ()=>setState(() {
+                              
+              }),
+            );
+          }else{
+            return new ListTile(
+              leading: Icon(Icons.location_on,color: Colors.indigoAccent,),
+              title: new Text("Your location"),
+              subtitle: new Text(res.error, style: TextStyle(color: Colors.red),),
+              onTap: (){
+                openMap(context, location);
+                  //buildMap(asset.data, location, controller);
+              },
+              trailing: new IconButton(
+                    icon: Icon(Icons.warning),
+                    onPressed: () => displayWarning(context,"Your location seems shady", "Are you sure you are in school?")
+              ),
+              onLongPress: ()=>setState(() {
+                              
+              }),
+              /* new IconButton(
+                icon: Icon(Icons.warning),
+                onPressed: () => displayWarning(context,"Your location seems shady", "Are you sure you are in school?")
+              ), */
+            );
+          }
         }
       }
     );
-  }
-
-  
-  Future<String> loadAsset() async {
-    return rootBundle.loadString('Assets/mapstyle1.json');
   }
 
   Future<Null> displayWarning(BuildContext context,String titleTxt, String warningTxt) async{
@@ -275,3 +256,4 @@ class _HomePageState extends State<HomePage>{
       }
     });
   } */
+}
