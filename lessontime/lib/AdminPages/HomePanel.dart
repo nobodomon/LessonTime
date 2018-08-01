@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lessontime/Logo.dart';
 import 'package:lessontime/models/Model.dart';
 import 'package:lessontime/CommonAssets/Assets.dart';
 import 'package:lessontime/FirebaseLink.dart';
@@ -35,19 +36,21 @@ class _HomePanelState extends State<HomePanel>{
         if(snapshot.hasData){
           nUser = Users.fromSnapshot(snapshot.data);
           return new Scaffold(
-            body: new Column(
+            backgroundColor: Colors.white,
+            body: new ListView(
               children: <Widget>[
-                pwWarningGen(nUser),
-                new Padding(
-                  padding: new EdgeInsets.fromLTRB(15.0,5.0,15.0,5.0),
-                  child: new Card(
-                    child: new ListTile(
-                      leading: new Icon(Icons.person),
-                      title: const Text("Welcome to the admin panel"),
-                      subtitle: Text(nUser.adminNo),
-                    ),
-                  )
+                new Container(
+                  color: Colors.indigo,
+                  child: Center(
+                    child: new Logo(250.0,"lib/Assets/LessonTime.png"),
+                  ),
                 ),
+                new ListTile(
+                  leading: new Icon(Icons.person, color: Colors.indigoAccent,),
+                  title: const Text("Welcome back"),
+                  subtitle: Text(nUser.adminNo),
+                ),
+                new Divider(),
               ],
             )
           );

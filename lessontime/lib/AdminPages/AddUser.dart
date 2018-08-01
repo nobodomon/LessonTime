@@ -25,7 +25,7 @@ class _AddUserState extends State<AddUser> with SingleTickerProviderStateMixin{
     // TODO: implement build
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
-      
+      backgroundColor: Colors.indigo,
       appBar: new TabBar(
         indicatorSize: TabBarIndicatorSize.tab,
         indicatorPadding: kTabLabelPadding,
@@ -33,7 +33,7 @@ class _AddUserState extends State<AddUser> with SingleTickerProviderStateMixin{
           tabBarIndicatorSize: TabBarIndicatorSize.tab,
           indicatorHeight: 30.0,
           indicatorRadius: 5.0,
-          indicatorColor: Colors.indigo
+          indicatorColor: Colors.indigoAccent
         ),
         controller: controller,
           tabs: <Widget>[

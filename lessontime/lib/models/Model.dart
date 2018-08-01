@@ -15,7 +15,9 @@ class Users {
   String lastLogin;
   int userType;
   String logonIP;
-
+  String school = '-';
+  String course = '-';
+  String group = '-';
 
   Users(this.email, this.userType){
     this.adminNo = email.substring(0, email.length-18);
@@ -35,6 +37,9 @@ class Users {
         this.userType = snapshot['userType'];
         this.lastLogin = snapshot['lastLogin'];
         this.logonIP = snapshot["logonIP"];
+        this.school = snapshot["school"];
+        this.course = snapshot["course"];
+        this.group = snapshot["group"];
     }
   }
       
@@ -46,6 +51,9 @@ class Users {
       "adminNo": adminNo,
       "email": email,
       "userType": userType,
+      "school": school,
+      "course": course,
+      "group": group
     };
   }
 
@@ -53,6 +61,9 @@ class Users {
     email = data["email"];
     adminNo = data["adminNo"];
     userType = data["userType"];
+    school = data["school"];
+    course = data["course"];
+    group = data["group"];
   }
 }
 
@@ -244,5 +255,24 @@ class Module{
 
   Module.fromSnapshot(AsyncSnapshot snapshot){
     this.moduleName = snapshot.data["moduleName"];
+  }
+}
+
+class CourseGrp{
+  String courseGrp;
+
+  CourseGrp(this.courseGrp);
+  toJson(){
+    return{
+      "courseGrp" : courseGrp,
+    };
+  }
+
+  CourseGrp.fromJson(Map data){
+    courseGrp = data["courseGrp"];
+  }
+
+  CourseGrp.fromSnapshot(AsyncSnapshot snapshot){
+    this.courseGrp = snapshot.data["courseGrp"];
   }
 }

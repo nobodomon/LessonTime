@@ -31,6 +31,13 @@ class FirebaseLink{
       String trimmed = email.substring(0,email.length-18).toUpperCase();
     return _fs.collection("Users").document(trimmed).snapshots();
   }
+
+  Future<Stream<DocumentSnapshot>> getUserStreamFsAdminNo(String email) async{
+      String trimmed = email.substring(0,email.length-18).toUpperCase();
+    return _fs.collection("Users").document(trimmed).snapshots();
+  }
+  
+
   void setLastLogin(String adminNo){
       String trimmed = adminNo.substring(0,adminNo.length-18).toUpperCase();
       Firestore.instance.collection("Users").document(trimmed).setData({"lastLogin": DateTime.now().toIso8601String()}, merge: true);
@@ -230,7 +237,7 @@ class FirebaseLink{
                 if(classes.documents.length > 0){
                   String docID = classes.documents.first.documentID;
                   print(docID);
-                  return Firestore.instance.collection("Lessons").document(docID).collection("Students").add(Users.fromSnapshot(snapshot).toJson()).then((DocumentReference ref){
+                  return Firestore.instance.collection("Lessons").document(docID).collection("Students").document(adminNo).setData(Users.fromSnapshot(snapshot).toJson()).then((_){
                     return new JoinClassResult(true, "Student successfully added");
                   });
                 }else{
@@ -284,7 +291,7 @@ class FirebaseLink{
                         }else if(existQuery == false){
                           bool isOpen = snapshot.documents.first.data["isOpen"];
                           if(isOpen){
-                            Firestore.instance.collection("Lessons").document(docID).collection("Students").add(user.toJson());
+                            Firestore.instance.collection("Lessons").document(docID).collection("Students").document(user.adminNo).setData(user.toJson());
                             print("Added to class: " + docID);
                             return new JoinClassResult(true,"You have successfully joined class #$key.");
                           }else{
@@ -378,6 +385,27 @@ class FirebaseLink{
     }
   }
 
+  Future<CourseCreationResult> addCourseGrps(String school, String courseID, String moduleGrp)async{
+    try{
+      CourseGrp toAdd = new CourseGrp(moduleGrp);
+      return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Groups").document(moduleGrp).setData(toAdd.toJson()).then((_){
+        return new CourseCreationResult(true, "Module Group successfully added");
+      });
+    }catch(error){
+      return new CourseCreationResult(false, error.toString());
+    }
+  }
+
+  Future<CourseCreationResult> removeCourseGrp(String school, String courseID, String moduleGrp)async{
+    try{
+      return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Groups").document(moduleGrp).delete().then((_){
+        return new CourseCreationResult(true, "Module Group successfully deleted");
+      });
+    }catch(error){
+      return new CourseCreationResult(false, error.toString());
+    }
+  }
+
   Future<DocumentSnapshot> getCourse(String school, String courseID) async{
     return Firestore.instance.collection("School").document(school).collection("courses").document(courseID).get();
   }
@@ -386,6 +414,10 @@ class FirebaseLink{
     return Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Modules").getDocuments();
   }
 
+  Future<QuerySnapshot> getCourseGrps(String school, String courseID) async{
+    return Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).collection("Groups").getDocuments();
+  }
+  
   Future<bool> checkIfCourseExist(String school, String courseID) async{
     return await Firestore.instance.collection("School").document(school).collection("Courses").document(courseID).get().then((DocumentSnapshot ss){
       if(ss.exists){
@@ -406,10 +438,36 @@ class FirebaseLink{
     });
   }
 
-  /* Future<QuerySnapshot> getClassListOfUser(String adminNo) async{
-    
+  Future<List<DocumentSnapshot>> getClassListOfUser(String adminNo) async{
+    List<DocumentSnapshot> snapshots = new List<DocumentSnapshot>();
+    await Firestore.instance.collection("Lessons").getDocuments().then((QuerySnapshot snapshot){
+      snapshot.documents.forEach((DocumentSnapshot dc){
+        if(dc.reference.collection("Students").document(adminNo).get() != null){
+          snapshots.add(dc);
+        }
+      });
+    });
+    return snapshots;
   }
- */
+ 
+  Future<List<DocumentSnapshot>> getClassAttendanceOfUserByModule(String adminNo,String module) async{
+    List<DocumentSnapshot> snapshots = new List<DocumentSnapshot>();
+    await Firestore.instance.collection("Lessons").where("moduleName", isEqualTo:  module).getDocuments().then((QuerySnapshot snapshot){
+      snapshot.documents.forEach((DocumentSnapshot dc){
+        if(dc.reference.collection("Students").document(adminNo).get() != null){
+          snapshots.add(dc);
+        }
+      });
+    });
+    return snapshots;
+  }
+
+  Future<int> getLessonCountByModule(String module) async{
+    return await Firestore.instance.collection("Lessons").where("module", isEqualTo:  module).getDocuments().then((QuerySnapshot snapshot){
+      return snapshot.documents.length;
+    });
+  }
+
   Future<bool> checkIfInClass(String key, String adminNo) async{
     key = key.toUpperCase();
     try{
@@ -429,6 +487,18 @@ class FirebaseLink{
       print(e.toString());
       return false;
     }
+  }
+
+  Future<JoinClassResult> assignGroupForStudent(String adminNo, String courseID, String school, String groupID) async{
+    return await getUserOnceFsNoTrim(adminNo).then((DocumentSnapshot userSnap){
+      Users retrieve = Users.fromSnapshot(userSnap);
+      retrieve.school = school;
+      retrieve.course = courseID;
+      retrieve.group = groupID;
+      return Firestore.instance.collection("Users").document(adminNo).setData(retrieve.toJson(),merge: false).then((_){
+        return new JoinClassResult(true, "Successfully assigned");
+      });
+    });
   }
 
   Future<DocumentSnapshot> getSettings() async{

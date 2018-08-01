@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:lessontime/Logo.dart';
 import 'package:lessontime/auth.dart';
 
 class AddStud extends StatefulWidget {
@@ -17,14 +20,14 @@ enum FormType {
 }
 
 class _AddStudState extends State<AddStud> {
-  static final formKey = new GlobalKey<FormState>();
+  static final studKey = new GlobalKey<FormState>();
 
   String _email;
   String _authHint = '';
 
 
   bool validateAndSave() {
-    final form = formKey.currentState;
+    final form = studKey.currentState;
     if (form.validate()) {
       form.save();
       return true;
@@ -36,9 +39,9 @@ class _AddStudState extends State<AddStud> {
     if (validateAndSave()) {
       try {
         var userId = 
-        await widget.auth.createUser(_email, _email,1);
+        await widget.auth.createUser(_email, _email,0);
             
-        final form = formKey.currentState;
+        final form = studKey.currentState;
         setState(() {
           form.reset();
           _authHint = 'Student Created\n\nUser id: $userId';
@@ -58,31 +61,46 @@ class _AddStudState extends State<AddStud> {
     }
   }
 
-  List<Widget> usernameAndPassword() {
-    return [
-      padded(child: new TextFormField(
-        key: new Key('email'),
-
+  Widget usernameAndPassword() {
+    Color select = Colors.indigo[400];
+    return padded(child: new TextFormField(
+        key: new Key('Admin number'),
         decoration: new InputDecoration(
-            labelText: 'Admin Number',
-            border: new OutlineInputBorder(
-              borderRadius: new BorderRadius.circular(25.0),
-            )),
+          isDense: true,
+          hintText: "Admin Number",
+          hintStyle: new TextStyle(
+            color: Colors.white
+          ),
+          prefixIcon: new Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Icon(Icons.group_add),
+          ),
+          fillColor: select,
+          filled: true,
+          border: new OutlineInputBorder(
+            borderSide: BorderSide(color: select, width: 2.0, style: BorderStyle.solid),
+            borderRadius: new BorderRadius.circular(50.0),
+          )
+        ),
         autocorrect: false,
-        autofocus: true,
-        validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
-        onSaved: (val) => _email = val+"@mymail.nyp.edu.sg",
-      )),
-    ];
+        validator: (val) => val.isEmpty ? 'Admin Number can\'t be empty.' : null,
+        onSaved: (val) => _email = val,
+      )
+    );
   }
 
-  List<Widget> submitWidgets(BuildContext context){
-    return [
-      new FlatButton(
+  Widget submitWidgets(BuildContext context){
+    Color select = Colors.indigo[400];
+    return new FlatButton(
+        textColor: Colors.white,
+          color: select,
+          padding: EdgeInsets.all(15.0),
+          shape: StadiumBorder(
+          ),
         key: new Key('register'),
         child: new Text('Create'),
-        onPressed: () => validateAndSubmit(context)
-    )];
+        onPressed: () => confirmJoin(context)
+    );
   }
 
   Widget hintText() {
@@ -100,41 +118,65 @@ class _AddStudState extends State<AddStud> {
 
   @override
   Widget build(BuildContext context) {
-      return new Scaffold(
-        resizeToAvoidBottomPadding: false,
-        backgroundColor: Colors.transparent,
-        body :new Container(
-            padding: const EdgeInsets.all(16.0),
+    return new Center(
+      child: new SingleChildScrollView(
+        child: Card(
+          margin: new EdgeInsets.all(50.0),
             child: new Column(
-                children: [
-                  new Card(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Logo(150.0,"lib/Assets/JoinClass.png"),
+                new Center(
+                  child: new Text("Add a student", style: TextStyle(fontWeight: FontWeight.w900),),
+                ),
+                new Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: new Form(
+                    key: studKey,
                       child: new Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const ListTile(
-                              leading: Icon(Icons.group_add),
-                              title: const Text("Add a new student"),
-                            ),
-                            new Container(
-                                padding: const EdgeInsets.all(16.0),
-                                child: new Form(
-                                    key: formKey,
-                                    child: new Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: usernameAndPassword() + submitWidgets(context),
-                                    ),
-                                    
-                                )
-                            ),
-                          ])
-                  ),
-                  //hintText()
-                ]
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        usernameAndPassword(),
+                        submitWidgets(context),
+                      ],
+                    ),
+                  )
+                ),
+              ]
             )
-          )
+          ),
+        ) 
       );
   }
 
+  Future<Null> confirmJoin(BuildContext ct) async{
+    if(validateAndSave()){
+      switch(
+      await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: new Text("Confirm to add $_email?"),
+          children: <Widget>[
+            new Padding(
+              padding: new EdgeInsets.all(25.0),
+              child: new Text("$_email will be created."),
+              ),
+            new FlatButton( 
+               onPressed:((){
+                validateAndSubmit(ct);
+                Navigator.pop(context);
+              }),
+             child: new Text("Confirm", style: new TextStyle(color: Colors.green),),
+            )
+          ],
+        )
+      )
+      ){}
+    }else{
+      
+    }
+    
+  }
   Widget padded({Widget child}) {
     return new Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),

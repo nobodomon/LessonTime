@@ -16,6 +16,7 @@ import 'package:lessontime/AdminPages/AddUser.dart';
 import 'package:lessontime/AdminPages/HomePanel.dart';
 import 'package:lessontime/AdminPages/AdminSettings.dart';
 import 'package:lessontime/AdminPages/AddCourse.dart';
+import 'package:lessontime/StudPages/UserLessons.dart';
 
 class MainContainer extends StatefulWidget {
   MainContainer({this.auth, this.onSignOut});
@@ -184,7 +185,7 @@ class _MainContainerState extends State<MainContainer>
           new QRPage(fbUser,cUser),
           new HomePage(fbUser),
           //new NewPage("Second"),
-          new NewPage("Third")
+          new UserLesson(fbUser,cUser)
         ],
         controller: tabController,
       ),
